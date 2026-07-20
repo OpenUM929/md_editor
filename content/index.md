@@ -1,0 +1,1 @@
+\# Welcome to MD Editor This is a \*\*WYSIWYG Markdown editor\*\*. You can edit this file directly. ## Features - WYSIWYG editing with Tiptap - Real-time Markdown conversion - Auto-save with recovery - Dark mode support ## Getting Started 1. Create a new file 2. Start editing 3. Save with Ctrl+S --- \*Happy writing!\*

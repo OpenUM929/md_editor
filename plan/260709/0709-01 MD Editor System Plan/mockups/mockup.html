@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="ko" data-color-mode="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MD Editor - WYSIWYG Mockup</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --sidebar-bg: oklch(0.985 0 0);
+      --sidebar-fg: oklch(0.145 0 0);
+      --sidebar-muted: oklch(0.556 0 0);
+      --sidebar-primary: oklch(0.205 0 0);
+      --sidebar-accent: oklch(0.97 0 0);
+      --sidebar-border: oklch(0.922 0 0);
+      --bg: oklch(1 0 0);
+      --fg: oklch(0.145 0 0);
+      --muted: oklch(0.97 0 0);
+      --muted-fg: oklch(0.556 0 0);
+      --border: oklch(0.922 0 0);
+      --primary: oklch(0.205 0 0);
+      --primary-fg: oklch(0.985 0 0);
+      --accent: oklch(0.97 0 0);
+      --accent-fg: oklch(0.205 0 0);
+      --toolbar-bg: oklch(0.985 0 0);
+      --success: oklch(0.623 0.214 149.8);
+      --hr: oklch(0.922 0 0);
+    }
+    .dark {
+      --sidebar-bg: oklch(0.205 0 0);
+      --sidebar-fg: oklch(0.985 0 0);
+      --sidebar-muted: oklch(0.708 0 0);
+      --sidebar-primary: oklch(0.488 0.243 264.376);
+      --sidebar-accent: oklch(0.27 0 0);
+      --sidebar-border: oklch(0.27 0 0);
+      --bg: oklch(0.145 0 0);
+      --fg: oklch(0.985 0 0);
+      --muted: oklch(0.27 0 0);
+      --muted-fg: oklch(0.708 0 0);
+      --border: oklch(0.27 0 0);
+      --primary: oklch(0.985 0 0);
+      --primary-fg: oklch(0.205 0 0);
+      --accent: oklch(0.27 0 0);
+      --accent-fg: oklch(0.985 0 0);
+      --toolbar-bg: oklch(0.17 0 0);
+      --success: oklch(0.623 0.214 149.8);
+      --hr: oklch(0.27 0 0);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      height: 100vh; overflow: hidden;
+    }
+    code, pre { font-family: 'JetBrains Mono', monospace; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    .app-layout { display: flex; height: 100vh; }
+    .sidebar {
+      width: 280px; min-width: 280px; background: var(--sidebar-bg);
+      border-right: 1px solid var(--sidebar-border);
+      display: flex; flex-direction: column;
+    }
+    .sidebar-header {
+      padding: 14px 16px; border-bottom: 1px solid var(--sidebar-border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .main-area { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    .topbar {
+      height: 48px; display: flex; align-items: center; gap: 12px;
+      padding: 0 16px; border-bottom: 1px solid var(--border);
+      background: var(--bg); flex-shrink: 0;
+    }
+    .editor-wrapper { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+    .editor-toolbar {
+      height: 42px; display: flex; align-items: center; gap: 2px;
+      padding: 0 12px; background: var(--toolbar-bg);
+      border-bottom: 1px solid var(--border); flex-shrink: 0;
+      flex-wrap: nowrap; overflow-x: auto;
+    }
+    .editor-content {
+      flex: 1; overflow-y: auto; padding: 32px 48px;
+      background: var(--bg);
+    }
+
+    /* Root folder selector */
+    .root-selector {
+      padding: 10px 12px; border-bottom: 1px solid var(--sidebar-border);
+    }
+    .root-input-group {
+      display: flex; align-items: center; gap: 4px;
+      padding: 5px 10px;
+      border: 1px solid var(--sidebar-border);
+      border-radius: 6px; font-size: 13px;
+      background: var(--bg);
+    }
+    .root-input-group:focus-within {
+      border-color: var(--sidebar-primary);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--sidebar-primary) 15%, transparent);
+    }
+    .root-input {
+      flex: 1; border: none; outline: none; background: transparent;
+      font-size: 13px; color: var(--fg); font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Tree */
+    .tree-section { padding: 6px 8px; }
+    .tree-label {
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.05em; color: var(--muted-fg);
+      padding: 6px 8px 4px;
+    }
+    .tree-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 5px 8px; border-radius: 5px; cursor: pointer;
+      font-size: 13px; color: var(--sidebar-fg); transition: all 0.1s;
+    }
+    .tree-item:hover { background: var(--sidebar-accent); }
+    .tree-item.active { background: var(--sidebar-accent); color: var(--sidebar-primary); font-weight: 500; }
+    .tree-item.indent-1 { padding-left: 28px; }
+    .tree-item.indent-2 { padding-left: 48px; }
+
+    /* Toolbar buttons */
+    .tool-btn {
+      width: 30px; height: 30px; display: flex; align-items: center;
+      justify-content: center; border-radius: 5px; cursor: pointer;
+      color: var(--muted-fg); border: none; background: transparent;
+      transition: all 0.1s; font-size: 13px;
+    }
+    .tool-btn:hover { background: var(--accent); color: var(--accent-fg); }
+    .tool-btn.active { background: var(--accent); color: var(--accent-fg); }
+    .tool-btn.is-active { background: oklch(0.87 0.01 260); color: oklch(0.3 0.05 260); }
+    .tool-sep { width: 1px; height: 20px; background: var(--border); margin: 0 4px; flex-shrink: 0; }
+    .tool-group { display: flex; align-items: center; }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 12px; border-radius: 6px; font-size: 12px;
+      font-weight: 500; cursor: pointer; border: 1px solid transparent;
+      transition: all 0.15s; white-space: nowrap;
+    }
+    .btn-primary { background: var(--primary); color: var(--primary-fg); }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-outline { background: transparent; border-color: var(--border); color: var(--fg); }
+    .btn-outline:hover { background: var(--accent); }
+    .btn-ghost {
+      background: transparent; color: var(--sidebar-muted); padding: 5px 8px;
+      font-size: 12px;
+    }
+    .btn-ghost:hover { background: var(--sidebar-accent); color: var(--sidebar-fg); }
+
+    /* Editor typography */
+    .wysiwyg {
+      max-width: 780px; margin: 0 auto;
+      outline: none; min-height: 400px;
+    }
+    .wysiwyg h1 { font-size: 32px; font-weight: 700; margin: 0 0 16px; line-height: 1.3; letter-spacing: -0.02em; }
+    .wysiwyg h2 { font-size: 24px; font-weight: 600; margin: 28px 0 12px; padding-bottom: 8px; border-bottom: 1px solid var(--hr); }
+    .wysiwyg h3 { font-size: 20px; font-weight: 600; margin: 24px 0 8px; }
+    .wysiwyg p { margin: 0 0 12px; line-height: 1.75; font-size: 15px; }
+    .wysiwyg p.is-editor-empty:first-child::before {
+      content: attr(data-placeholder); float: left; color: var(--muted-fg);
+      pointer-events: none; height: 0;
+    }
+    .wysiwyg code {
+      background: var(--muted); padding: 2px 6px; border-radius: 4px;
+      font-size: 13px; font-family: 'JetBrains Mono', monospace;
+    }
+    .wysiwyg pre {
+      background: var(--muted); padding: 16px 20px; border-radius: 8px;
+      margin: 0 0 16px; overflow-x: auto; font-size: 13px;
+    }
+    .wysiwyg pre code { background: none; padding: 0; }
+    .wysiwyg blockquote {
+      border-left: 3px solid var(--sidebar-primary); padding: 8px 20px;
+      margin: 0 0 16px; border-radius: 0 6px 6px 0;
+      color: var(--muted-fg); font-style: italic;
+    }
+    .wysiwyg ul, .wysiwyg ol { margin: 0 0 12px; padding-left: 24px; }
+    .wysiwyg li { margin: 4px 0; line-height: 1.7; }
+    .wysiwyg li p { margin: 0; }
+    .wysiwyg table { width: 100%; border-collapse: collapse; margin: 0 0 16px; }
+    .wysiwyg th, .wysiwyg td {
+      border: 1px solid var(--border); padding: 8px 12px; text-align: left; font-size: 14px;
+    }
+    .wysiwyg th { background: var(--muted); font-weight: 600; }
+    .wysiwyg hr { border: none; border-top: 1px solid var(--hr); margin: 24px 0; }
+    .wysiwyg a { color: var(--sidebar-primary); text-decoration: underline; cursor: pointer; }
+    .wysiwyg img { max-width: 100%; border-radius: 8px; }
+    .wysiwyg s { text-decoration: line-through; }
+    .wysiwyg u { text-decoration: underline; }
+    .wysiwyg .mention {
+      background: color-mix(in srgb, var(--sidebar-primary) 10%, transparent);
+      border-radius: 4px; padding: 1px 4px; color: var(--sidebar-primary);
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px;
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 500;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+      opacity: 0; transform: translateY(10px); transition: all 0.3s; z-index: 100;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.success { background: var(--success); color: white; }
+
+    /* Breadcrumb */
+    .bc { display: flex; align-items: center; gap: 4px; font-size: 13px; }
+    .bc-item { color: var(--muted-fg); }
+    .bc-item:last-child { color: var(--fg); font-weight: 500; }
+    .bc-sep { color: var(--muted-fg); }
+
+    /* Slash menu mockup */
+    .slash-menu {
+      position: absolute; z-index: 50;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      padding: 6px; width: 240px;
+      display: none;
+    }
+    .slash-menu.show { display: block; }
+    .slash-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 13px;
+    }
+    .slash-item:hover { background: var(--accent); }
+    .slash-item-icon {
+      width: 30px; height: 30px; display: flex; align-items: center;
+      justify-content: center; border-radius: 6px; background: var(--muted);
+    }
+    .slash-item-text { flex: 1; }
+    .slash-item-title { font-weight: 500; }
+    .slash-item-desc { font-size: 11px; color: var(--muted-fg); }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div style="display:flex;align-items:center;gap:8px">
+          <i data-lucide="file-text" style="width:18px;height:18px;stroke-width:2.5"></i>
+          <span style="font-size:14px;font-weight:600">MD Editor</span>
+        </div>
+        <div style="display:flex;gap:2px">
+          <button class="tool-btn" onclick="toggleTheme()" title="Toggle theme">
+            <i data-lucide="moon" style="width:15px;height:15px"></i>
+          </button>
+          <button class="tool-btn" title="Settings">
+            <i data-lucide="settings" style="width:15px;height:15px"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Root folder selector -->
+      <div class="root-selector">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+          <i data-lucide="folder-tree" style="width:14px;height:14px;color:var(--sidebar-muted)"></i>
+          <span style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:var(--sidebar-muted)">Root Directory</span>
+        </div>
+        <div class="root-input-group">
+          <i data-lucide="folder" style="width:15px;height:15px;flex-shrink:0;color:var(--sidebar-muted)"></i>
+          <input class="root-input" type="text" value="content/" spellcheck="false" />
+          <button style="display:flex;align-items:center;justify-content:center;width:22px;height:22px;border:none;background:var(--accent);border-radius:4px;cursor:pointer;color:var(--accent-fg);flex-shrink:0" title="Browse">
+            <i data-lucide="chevron-down" style="width:14px;height:14px"></i>
+          </button>
+        </div>
+        <div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap">
+          <span style="font-size:11px;padding:2px 6px;border-radius:4px;background:var(--accent);color:var(--accent-fg);cursor:pointer">content/</span>
+          <span style="font-size:11px;padding:2px 6px;border-radius:4px;background:var(--accent);color:var(--accent-fg);cursor:pointer">content/docs/</span>
+          <span style="font-size:11px;padding:2px 6px;border-radius:4px;background:var(--accent);color:var(--accent-fg);cursor:pointer">content/guides/</span>
+        </div>
+      </div>
+
+      <!-- File Tree -->
+      <div style="flex:1;overflow-y:auto">
+        <div class="tree-section">
+          <div class="tree-label">
+            <i data-lucide="folder-open" style="width:13px;height:13px"></i>
+            content/
+          </div>
+          <div class="tree-item indent-1 active">
+            <i data-lucide="file-text" style="width:15px;height:15px;flex-shrink:0"></i>
+            index.md
+          </div>
+          <div class="tree-item indent-1">
+            <i data-lucide="file-text" style="width:15px;height:15px;flex-shrink:0"></i>
+            changelog.md
+          </div>
+          <div class="tree-item indent-1">
+            <i data-lucide="folder" style="width:15px;height:15px;flex-shrink:0"></i>
+            docs
+          </div>
+          <div class="tree-item indent-2">
+            <i data-lucide="file-text" style="width:15px;height:15px;flex-shrink:0"></i>
+            getting-started.md
+          </div>
+          <div class="tree-item indent-2">
+            <i data-lucide="file-text" style="width:15px;height:15px;flex-shrink:0"></i>
+            architecture.md
+          </div>
+          <div class="tree-item indent-1">
+            <i data-lucide="folder" style="width:15px;height:15px;flex-shrink:0"></i>
+            guides
+          </div>
+          <div class="tree-item indent-2">
+            <i data-lucide="file-text" style="width:15px;height:15px;flex-shrink:0"></i>
+            installation.md
+          </div>
+          <div class="tree-item indent-2">
+            <i data-lucide="file-text" style="width:15px;height:15px;flex-shrink:0"></i>
+            configuration.md
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar Footer -->
+      <div style="padding:10px 12px;border-top:1px solid var(--sidebar-border);display:flex;gap:4px">
+        <button class="btn btn-ghost" style="gap:4px">
+          <i data-lucide="plus" style="width:14px;height:14px"></i> New file
+        </button>
+        <button class="btn btn-ghost" style="gap:4px">
+          <i data-lucide="folder-plus" style="width:14px;height:14px"></i> Folder
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Area -->
+    <main class="main-area">
+      <!-- Top Bar -->
+      <div class="topbar">
+        <button class="tool-btn" title="Toggle sidebar">
+          <i data-lucide="panel-left-close" style="width:16px;height:16px"></i>
+        </button>
+        <div class="bc">
+          <span class="bc-item">content</span>
+          <span class="bc-sep">/</span>
+          <span class="bc-item">index.md</span>
+        </div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:6px">
+          <span id="saveStatus" style="font-size:12px;color:var(--muted-fg)">Saved</span>
+          <button class="btn btn-outline" style="gap:4px;padding:5px 10px" onclick="showToast()">
+            <i data-lucide="save" style="width:14px;height:14px"></i> Save
+          </button>
+          <button class="tool-btn" title="More actions">
+            <i data-lucide="ellipsis-vertical" style="width:16px;height:16px"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- WYSIWYG Editor -->
+      <div class="editor-wrapper">
+        <!-- Toolbar -->
+        <div class="editor-toolbar">
+          <div class="tool-group">
+            <button class="tool-btn" title="Undo"><i data-lucide="undo" style="width:15px;height:15px"></i></button>
+            <button class="tool-btn" title="Redo"><i data-lucide="redo" style="width:15px;height:15px"></i></button>
+          </div>
+          <div class="tool-sep"></div>
+          <div class="tool-group">
+            <button class="tool-btn is-active" title="Bold"><b style="font-size:14px">B</b></button>
+            <button class="tool-btn" title="Italic"><i style="font-size:14px;font-style:italic">I</i></button>
+            <button class="tool-btn" title="Underline"><u style="font-size:14px">U</u></button>
+            <button class="tool-btn" title="Strikethrough"><s style="font-size:14px">S</s></button>
+          </div>
+          <div class="tool-sep"></div>
+          <div class="tool-group">
+            <button class="tool-btn" title="Heading"><i data-lucide="heading" style="width:15px;height:15px"></i></button>
+            <button class="tool-btn" title="Code"><i data-lucide="code" style="width:15px;height:15px"></i></button>
+            <button class="tool-btn" title="Blockquote"><i data-lucide="quote" style="width:15px;height:15px"></i></button>
+          </div>
+          <div class="tool-sep"></div>
+          <div class="tool-group">
+            <button class="tool-btn" title="Bullet List"><i data-lucide="list" style="width:15px;height:15px"></i></button>
+            <button class="tool-btn" title="Ordered List"><i data-lucide="list-ordered" style="width:15px;height:15px"></i></button>
+            <button class="tool-btn" title="Task List"><i data-lucide="list-checks" style="width:15px;height:15px"></i></button>
+          </div>
+          <div class="tool-sep"></div>
+          <div class="tool-group">
+            <button class="tool-btn" title="Link"><i data-lucide="link" style="width:15px;height:15px"></i></button>
+            <button class="tool-btn" title="Image"><i data-lucide="image" style="width:15px;height:15px"></i></button>
+            <button class="tool-btn" title="Table"><i data-lucide="table" style="width:15px;height:15px"></i></button>
+            <button class="tool-btn" title="Horizontal Rule"><i data-lucide="minus" style="width:15px;height:15px"></i></button>
+          </div>
+          <div class="tool-sep"></div>
+          <div class="tool-group">
+            <button class="tool-btn" title="Undo"><i data-lucide="undo" style="width:15px;height:15px"></i></button>
+            <button class="tool-btn" title="Redo"><i data-lucide="redo" style="width:15px;height:15px"></i></button>
+          </div>
+          <div style="margin-left:auto">
+            <button class="tool-btn" title="Fullscreen"><i data-lucide="maximize" style="width:15px;height:15px"></i></button>
+          </div>
+        </div>
+
+        <!-- Editable Content -->
+        <div class="editor-content" onclick="document.getElementById('wysiwyg').focus()">
+          <div id="wysiwyg" class="wysiwyg" contenteditable="true" spellcheck="true" data-placeholder="Start writing..." style="outline:none">
+            <h1>Welcome to MD Editor</h1>
+            <p>This is a <strong>WYSIWYG (What You See Is What You Get)</strong> markdown editor. You can edit this document directly — just like <strong>Notion</strong>, <strong>Google Docs</strong>, or <strong>MS Word</strong>. No markdown syntax knowledge needed.</p>
+
+            <h2>Getting Started</h2>
+            <p>Use the toolbar above to format text, or use these keyboard shortcuts:</p>
+            <ul>
+              <li><strong>Ctrl+B</strong> — Bold</li>
+              <li><strong>Ctrl+I</strong> — Italic</li>
+              <li><strong>Ctrl+U</strong> — Underline</li>
+              <li><strong>Ctrl+K</strong> — Insert Link</li>
+              <li><strong>/</strong> — Open slash command menu</li>
+            </ul>
+
+            <h2>Features</h2>
+            <h3>Code Blocks</h3>
+            <pre><code><span style="color:var(--muted-fg)">function</span> <span style="color:var(--sidebar-primary)">greet</span>(<span style="color:var(--muted-fg)">name</span>: <span style="color:#2563eb">string</span>): <span style="color:#2563eb">string</span> {
+  <span style="color:var(--muted-fg)">return</span> <span style="color:#059669">`Hello, ${name}!`</span>;
+}</code></pre>
+
+            <h3>Blockquote</h3>
+            <blockquote><p>"The best way to predict the future is to invent it." — Alan Kay</p></blockquote>
+
+            <blockquote><p>"Any sufficiently advanced technology is indistinguishable from magic." — Arthur C. Clarke</p></blockquote>
+
+            <h3>Table</h3>
+            <table>
+              <thead><tr><th>Feature</th><th>Status</th><th>Priority</th></tr></thead>
+              <tbody>
+                <tr><td>File Tree</td><td>✅ Complete</td><td>High</td></tr>
+                <tr><td>WYSIWYG Editor</td><td>✅ Complete</td><td>High</td></tr>
+                <tr><td>Save to Markdown</td><td>🚧 In Progress</td><td>High</td></tr>
+                <tr><td>Dark Mode</td><td>⬜ Planned</td><td>Medium</td></tr>
+              </tbody>
+            </table>
+
+            <h3>Task List</h3>
+            <ul>
+              <li style="list-style:none;margin-left:-24px"><input type="checkbox" checked disabled style="margin-right:8px"> Create project structure</li>
+              <li style="list-style:none;margin-left:-24px"><input type="checkbox" checked disabled style="margin-right:8px"> Set up Tiptap editor</li>
+              <li style="list-style:none;margin-left:-24px"><input type="checkbox" disabled style="margin-right:8px"> Implement file saving</li>
+              <li style="list-style:none;margin-left:-24px"><input type="checkbox" disabled style="margin-right:8px"> Add dark mode support</li>
+            </ul>
+
+            <p>Type <code>/</code> to open the slash command menu and add new blocks!</p>
+          </div>
+
+          <!-- Slash Menu Popover (mockup) -->
+          <div id="slashMenu" class="slash-menu">
+            <div class="slash-item">
+              <div class="slash-item-icon"><i data-lucide="heading" style="width:16px;height:16px"></i></div>
+              <div class="slash-item-text">
+                <div class="slash-item-title">Heading 1</div>
+                <div class="slash-item-desc">Large section heading</div>
+              </div>
+            </div>
+            <div class="slash-item">
+              <div class="slash-item-icon"><i data-lucide="list" style="width:16px;height:16px"></i></div>
+              <div class="slash-item-text">
+                <div class="slash-item-title">Bullet List</div>
+                <div class="slash-item-desc">Create a simple bullet list</div>
+              </div>
+            </div>
+            <div class="slash-item">
+              <div class="slash-item-icon"><i data-lucide="check-square" style="width:16px;height:16px"></i></div>
+              <div class="slash-item-text">
+                <div class="slash-item-title">Task List</div>
+                <div class="slash-item-desc">Track tasks with checkboxes</div>
+              </div>
+            </div>
+            <div class="slash-item">
+              <div class="slash-item-icon"><i data-lucide="code" style="width:16px;height:16px"></i></div>
+              <div class="slash-item-text">
+                <div class="slash-item-title">Code Block</div>
+                <div class="slash-item-desc">Code with syntax highlighting</div>
+              </div>
+            </div>
+            <div class="slash-item">
+              <div class="slash-item-icon"><i data-lucide="table" style="width:16px;height:16px"></i></div>
+              <div class="slash-item-text">
+                <div class="slash-item-title">Table</div>
+                <div class="slash-item-desc">Insert a table</div>
+              </div>
+            </div>
+            <div class="slash-item">
+              <div class="slash-item-icon"><i data-lucide="quote" style="width:16px;height:16px"></i></div>
+              <div class="slash-item-text">
+                <div class="slash-item-title">Blockquote</div>
+                <div class="slash-item-desc">Insert a quote</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast success">
+    <i data-lucide="check-circle" style="width:16px;height:16px"></i>
+    <span>File saved successfully</span>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      const isLight = html.getAttribute('data-color-mode') === 'light';
+      html.setAttribute('data-color-mode', isLight ? 'dark' : 'light');
+      lucide.createIcons();
+    }
+
+    function showToast() {
+      const toast = document.getElementById('toast');
+      const status = document.getElementById('saveStatus');
+      toast.classList.add('show');
+      status.textContent = 'Saved';
+      status.style.color = 'var(--success)';
+      setTimeout(() => { toast.classList.remove('show'); }, 2500);
+    }
+
+    // Demo: toggle slash menu on typing "/"
+    const wysiwyg = document.getElementById('wysiwyg');
+    const slashMenu = document.getElementById('slashMenu');
+    let slashVisible = false;
+
+    wysiwyg.addEventListener('input', function() {
+      const sel = window.getSelection();
+      if (!sel.rangeCount) return;
+      const text = sel.anchorNode?.textContent || '';
+      const caretPos = sel.anchorOffset;
+      const lineStart = text.lastIndexOf('\n', caretPos - 1) + 1;
+      const beforeCaret = text.slice(lineStart, caretPos);
+
+      if (beforeCaret === '/') {
+        const range = sel.getRangeAt(0);
+        const rect = range.getBoundingClientRect();
+        const editorRect = document.querySelector('.editor-content').getBoundingClientRect();
+        slashMenu.style.left = (rect.left - editorRect.left + 0) + 'px';
+        slashMenu.style.top = (rect.bottom - editorRect.top + 4) + 'px';
+        slashMenu.classList.add('show');
+        slashVisible = true;
+      } else if (slashVisible && !beforeCaret.startsWith('/')) {
+        slashMenu.classList.remove('show');
+        slashVisible = false;
+      }
+    });
+
+    wysiwyg.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && slashVisible) {
+        slashMenu.classList.remove('show');
+        slashVisible = false;
+      }
+    });
+
+    // Click on slash menu items
+    document.querySelectorAll('.slash-item').forEach(item => {
+      item.addEventListener('click', function() {
+        slashMenu.classList.remove('show');
+        slashVisible = false;
+        // Insert demo content
+        const title = this.querySelector('.slash-item-title')?.textContent || '';
+        document.execCommand('insertText', false, '[' + title + ' block inserted]');
+        wysiwyg.focus();
+      });
+    });
+
+    // Formatting toolbar buttons
+    document.querySelectorAll('.tool-btn').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        const html = this.innerHTML;
+        if (html.includes('Bold') || html.includes('<b>')) {
+          document.execCommand('bold');
+          this.classList.toggle('is-active');
+        } else if (html.includes('Italic') || html.includes('<i>')) {
+          document.execCommand('italic');
+        } else if (html.includes('Underline') || html.includes('<u>')) {
+          document.execCommand('underline');
+        } else if (html.includes('Strikethrough') || html.includes('<s>')) {
+          document.execCommand('strikeThrough');
+        }
+      });
+    });
+
+    // Save on Ctrl+S
+    document.addEventListener('keydown', function(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        showToast();
+      }
+    });
+  </script>
+</body>
+</html>

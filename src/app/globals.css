@@ -1,26 +1,504 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@plugin "@tailwindcss/typography";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --a4-m-tb: 20mm;
+  --a4-m-lr: 15mm;
+  --a4-gap: 8mm;
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* 본문/제목/표 여백 compact화 (공무원 한 장 양식 수용) */
+.a4-canvas .ProseMirror,
+.print-pages,
+.pdf-preview-sheet {
+  line-height: 1.5;
+}
+.a4-canvas .ProseMirror :is(p, ul, ol, blockquote),
+.print-pages :is(p, ul, ol, blockquote),
+.pdf-preview-sheet :is(p, ul, ol, blockquote) {
+  margin: 0.7em 0;
+}
+.a4-canvas .ProseMirror :is(h1, h2, h3, h4),
+.print-pages :is(h1, h2, h3, h4),
+.pdf-preview-sheet :is(h1, h2, h3, h4) {
+  margin: 1.4em 0 0.7em;
+  line-height: 1.3;
+}
+.a4-canvas .ProseMirror :is(h1, h2, h3, h4):first-child,
+.print-pages :is(h1, h2, h3, h4):first-child,
+.pdf-preview-sheet :is(h1, h2, h3, h4):first-child {
+  margin-top: 0.6em;
+}
+/* 수평선(---) 여백: 항목(##) 간 gap */
+.a4-canvas .ProseMirror hr,
+.print-pages hr,
+.pdf-preview-sheet hr {
+  margin: 1.2em 0;
+  border: none;
+  border-top: 1px solid var(--border);
+}
+.a4-canvas .ProseMirror table,
+.print-pages table,
+.pdf-preview-sheet table {
+  margin: 1em 0;
+}
+
+/* A4 캔버스: 실제 A4 용지 컨테이너를 쌓는 부모 */
+.a4-canvas {
+  position: relative;
+  width: 230mm;
+  margin: 0 auto;
+}
+
+/* 용지 컨테이너 배경 레이어 (그림자 있는 A4 시트) */
+.a4-sheets {
+  position: absolute;
+  left: 10mm;
+  width: 210mm;
+  top: 0;
+  bottom: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.a4-sheets .a4-page {
+  position: absolute;
+  left: 0;
+  width: 210mm;
+  height: 297mm;
+  background: var(--card);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+  border-radius: 1px;
+  /* 페이지 경계 밖으로 글자가 새어나가는(spill) 것을 원천 차단 */
+  overflow: hidden;
+}
+
+/* 일체(A4 연속) 모드: 분리 없이 한 장의 흰 A4 시트로 표시 */
+.a4-canvas--ilche {
+  width: 210mm;
+  min-height: 297mm;
+  background: var(--card);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+  border-radius: 1px;
+}
+
+/* 편집기: 연속 흐름, 용지 배경 위에 오버레이 */
+.a4-canvas .ProseMirror {
+  position: relative;
+  z-index: 1;
+  width: 210mm;
+  padding: var(--a4-m-tb) var(--a4-m-lr);
+  margin: 0 auto;
+  box-sizing: border-box;
+  background: transparent;
+}
+
+/* 표: A4 폭(210mm)을 넘지 않도록 고정 레이아웃 + 셀 줄바꿈 */
+.a4-canvas .ProseMirror table,
+.print-pages table {
+  width: 100%;
+  max-width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  margin: 0.75em 0;
+}
+.a4-canvas .ProseMirror :is(th, td),
+.print-pages :is(th, td),
+.pdf-preview-sheet :is(th, td) {
+  border: 1px solid var(--border);
+  padding: 0.3em 0.5em;
+  vertical-align: middle;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  font-size: 0.95em;
+  line-height: 1.35;
+}
+.a4-canvas .ProseMirror th,
+.print-pages th,
+.pdf-preview-sheet th {
+  background: color-mix(in oklab, var(--muted) 70%, transparent);
+  font-weight: 600;
+  text-align: left;
+}
+
+/* Page Break 노드 — 용지 경계 + 여백을 포함한 gap */
+.page-break {
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  cursor: default;
+}
+
+.page-break--auto {
+  height: calc(var(--a4-m-tb) + var(--a4-m-tb) + var(--a4-gap));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.page-break--auto .page-break-gap {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.page-break--auto .page-break-gap::before,
+.page-break--auto .page-break-gap::after {
+  content: "";
+  flex: 1;
+  height: 0;
+  border-top: 1px dashed color-mix(in oklab, var(--muted-foreground) 35%, transparent);
+}
+.page-break--auto .page-break-number {
+  flex: none;
+  font-size: 0.6rem;
+  color: color-mix(in oklab, var(--muted-foreground) 50%, transparent);
+  font-family: var(--font-mono, monospace);
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+/* 수동 Page Break */
+.page-break--manual {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  counter-increment: page;
+}
+.page-break--manual .page-break-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.page-break--manual .page-break-label {
+  flex: none;
+  font-size: 0.7rem;
+  color: var(--muted-foreground);
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  font-family: var(--font-mono, monospace);
+}
+.page-break--manual[data-page-num]::after {
+  content: "— " counter(page) " —";
+}
+
+/* 블록 요소 페이지 분할 방지 (인쇄/화면) */
+.a4-canvas .ProseMirror :is(
+  h1, h2, h3, h4, h5, h6,
+  table, pre, blockquote,
+  img, ul, ol, .task-list-item
+) {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+/* 인쇄 전용 페이지 컨테이너 (화면에 숨김) */
+.print-pages {
+  display: none;
+}
+
+/* ── 인쇄 ── */
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    height: auto !important;
+    overflow: visible !important;
+    color: #000 !important;
+  }
+
+  .print\:hidden {
+    display: none !important;
+  }
+
+  .tiptap-editor,
+  .a4-canvas,
+  .a4-sheets {
+    display: none !important;
+  }
+
+  .print-pages {
+    display: block !important;
+    padding: 0;
+    margin: 0;
+  }
+
+  .print-pages,
+  .print-pages * {
+    color: #000 !important;
+  }
+  .print-pages {
+    background: #fff !important;
+  }
+
+  .print-pages :is(p, li, h1, h2, h3, h4, h5, h6, blockquote, pre, table, img, ul, ol) {
+    orphans: 3;
+    widows: 3;
+  }
+
+  .print-pages :is(table, th, td) {
+    border-color: #999 !important;
+  }
+  .print-pages th {
+    background: #f0f0f0 !important;
+  }
+
+  .page-break--auto,
+  .page-break--manual {
+    break-before: page;
+    page-break-before: always;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    visibility: hidden;
+  }
+  .page-break--auto *,
+  .page-break--manual * {
+    display: none !important;
+  }
+
+  /* 일체(ilche) 인쇄: 수동/자동 페이지 분할을 무시하고 연속 흐름으로 출력 */
+  .print-pages[data-page-mode="ilche"] .page-break--manual,
+  .print-pages[data-page-mode="ilche"] .page-break--auto {
+    break-before: auto;
+    page-break-before: auto;
+  }
+
+  /* 일체(ilche) 출력: 페이지 분할 시각요소 완전 숨김 */
+  .print-pages[data-page-mode="ilche"] .page-break {
+    display: none !important;
+  }
+}
+
+/* ── PDF 저장 미리보기 모달 (높이 = A4 한 장) ── */
+.pdf-preview-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pdf-preview-panel {
+  width: 92vw;
+  max-width: 920px;
+  height: 90vh;
+  background: #fff;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+.pdf-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid #e5e5e5;
+  flex-shrink: 0;
+}
+.pdf-preview-title {
+  font-weight: 600;
+}
+.pdf-preview-close {
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+  cursor: pointer;
+  line-height: 1;
+}
+.pdf-preview-scroll {
+  flex: 1;
+  overflow-y: auto;
+  background: #e5e7eb;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.pdf-preview-sheet {
+  width: 210mm;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  box-sizing: border-box;
+  color: #000;
+}
+.pdf-preview-sheet table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  margin: 0.75em 0;
+}
+.pdf-preview-sheet :is(th, td) {
+  border: 1px solid #999;
+  padding: 0.3em 0.5em;
+  vertical-align: middle;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  font-size: 0.95em;
+  line-height: 1.35;
+}
+.pdf-preview-sheet th {
+  background: #f0f0f0;
+  font-weight: 600;
+  text-align: left;
+}
+
+/* 일체(ilche): 화면/미리보기에서 페이지 분할 시각요소 완전 숨김 → md 파일처럼 연속 흐름 */
+.a4-canvas--ilche .page-break,
+.pdf-preview-sheet .page-break {
+  display: none !important;
+}
+.pdf-preview-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 10px 16px;
+  border-top: 1px solid #e5e5e5;
+  flex-shrink: 0;
+}
+.pdf-preview-btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+.pdf-preview-btn--primary {
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
 }

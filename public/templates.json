@@ -1,0 +1,164 @@
+{
+  "groups": [
+    {
+      "topic": "report",
+      "displayName": "업무 보고서",
+      "templates": [
+        {
+          "title": "주간 업무 보고서",
+          "topic": "report",
+          "description": "팀원 개인의 주간 업무 진행 상황을 한 장 A4 보고서로 정리하는 템플릿입니다.",
+          "order": 1,
+          "createdAt": "2026-07-10",
+          "slug": "weekly-report",
+          "relativePath": "report/weekly-report.md",
+          "body": "---\ntitle: \"주간 업무 보고서\"\ntopic: \"report\"\ndescription: \"팀원 개인의 주간 업무 진행 상황을 한 장 A4 보고서로 정리하는 템플릿입니다.\"\norder: 1\ncreatedAt: \"2026-07-10\"\npageMode: single\n---\n\n# 주간 업무 보고서\n\n**보고 기간:** YYYY-MM-DD ~ YYYY-MM-DD　|　**작성자:** 　|　**팀/부서:**\n\n---\n\n## 1. 주요 성과\n\n| 항목 | 내용 | 진행률(%) |\n|------|------|-----------|\n| 1 | | |\n| 2 | | |\n| 3 | | |\n\n---\n\n## 2. 이슈 및 블로커\n\n| # | 이슈 내용 | 영향 | 해결 상태 |\n|---|-----------|------|-----------|\n| 1 | | | |\n| 2 | | | |\n\n---\n\n## 3. 다음 주 계획\n\n- [ ] \n- [ ] \n- [ ] \n\n---\n\n## 4. 특이사항\n\n- \n"
+        },
+        {
+          "title": "월간 업무 보고서",
+          "topic": "report",
+          "description": "월 단위 종합 업무 성과와 주요 지표를 한 장 A4 보고서로 정리하는 템플릿입니다.",
+          "order": 2,
+          "createdAt": "2026-07-10",
+          "slug": "monthly-report",
+          "relativePath": "report/monthly-report.md",
+          "body": "---\ntitle: \"월간 업무 보고서\"\ntopic: \"report\"\ndescription: \"월 단위 종합 업무 성과와 주요 지표를 한 장 A4 보고서로 정리하는 템플릿입니다.\"\norder: 2\ncreatedAt: \"2026-07-10\"\npageMode: single\n---\n\n# 월간 업무 보고서\n\n**보고 월:** YYYY년 MM월　|　**작성자:** 　|　**부서:**\n\n---\n\n## 1. 월간 요약\n\n> 한 달간의 업무를 3줄 이내로 요약합니다.\n\n---\n\n## 2. 핵심 지표\n\n| 지표 | 이번 달 | 전월 | 목표 |\n|------|---------|------|------|\n| | | | |\n| | | | |\n\n---\n\n## 3. 주요 성과 및 이슈\n\n- **성과:** \n- **이슈/해결:** \n\n---\n\n## 4. 다음 달 계획\n\n1. \n2. \n3. \n\n---\n\n## 5. 건의사항\n\n- \n"
+        },
+        {
+          "title": "프로젝트 현황 보고서",
+          "topic": "report",
+          "description": "진행 중인 프로젝트의 상태와 진행률을 한 장 A4 보고서로 정리하는 템플릿입니다.",
+          "order": 3,
+          "createdAt": "2026-07-10",
+          "slug": "project-status-report",
+          "relativePath": "report/project-status-report.md",
+          "body": "---\ntitle: \"프로젝트 현황 보고서\"\ntopic: \"report\"\ndescription: \"진행 중인 프로젝트의 상태와 진행률을 한 장 A4 보고서로 정리하는 템플릿입니다.\"\norder: 3\ncreatedAt: \"2026-07-10\"\npageMode: single\n---\n\n# 프로젝트 현황 보고서\n\n**프로젝트명:** 　|　**보고일:** YYYY-MM-DD　|　**담당자:** 　|　**진행률:** %\n\n---\n\n## 1. 작업 항목별 현황\n\n| 작업 항목 | 담당자 | 진행률(%) | 상태 |\n|-----------|--------|-----------|------|\n| | | | |\n| | | | |\n| | | | |\n\n**상태:** 진행 중 / 지연 / 완료 / 위험\n\n---\n\n## 2. 리스크 및 이슈\n\n| 구분 | 내용 | 심각도 | 대응 방안 |\n|------|------|--------|----------|\n| 리스크 | | 상/중/하 | |\n| 이슈 | | 상/중/하 | |\n\n---\n\n## 3. 다음 보고까지 계획\n\n- \n- \n"
+        }
+      ]
+    },
+    {
+      "topic": "meeting",
+      "displayName": "회의록",
+      "templates": [
+        {
+          "title": "팀 회의록",
+          "topic": "meeting",
+          "description": "정기 팀 회의의 안건, 논의 내용, 결정 사항을 기록하는 템플릿입니다.",
+          "order": 1,
+          "createdAt": "2026-07-10",
+          "slug": "team-meeting",
+          "relativePath": "meeting/team-meeting.md",
+          "body": "---\ntitle: \"팀 회의록\"\ntopic: \"meeting\"\ndescription: \"정기 팀 회의의 안건, 논의 내용, 결정 사항을 기록하는 템플릿입니다.\"\norder: 1\ncreatedAt: \"2026-07-10\"\n---\n\n# 팀 회의록\n\n**일시:** YYYY-MM-DD (요일) HH:MM ~ HH:MM　|　**장소:** 　|　**참석자:** 　|　**작성자:**\n\n---\n\n## 1. 의제\n\n- (예: 전주 미완료 과제 점검)\n- (예: 이번 주 우선순위 합의)\n- (예: 리스크 및 이슈 공유)\n\n---\n\n---pb---\n\n## 2. 논의 내용\n\n### 2.1 (주제)\n\n- (예: 현황 및 배경)\n- (예: 검토 의견)\n- (예: 대안 비교)\n\n**결정 사항:**\n\n- (예: OO로 결정, 담당자 박OO)\n\n### 2.2 (주제)\n\n- (예: 현황 및 배경)\n- (예: 검토 의견)\n- (예: 대안 비교)\n\n**결정 사항:**\n\n- (예: OO로 결정, 담당자 김OO)\n\n### 2.3 (주제)\n\n- (예: 현황 및 배경)\n- (예: 검토 의견)\n- (예: 대안 비교)\n\n**결정 사항:**\n\n- (예: OO로 결정, 담당자 이OO)\n\n---\n\n---pb---\n\n## 3. Action Items\n\n| 담당자 | 작업 내용 | 마감일 | 상태 |\n|--------|----------|--------|------|\n| (예: 김OO) | (예: API 연동) | YYYY-MM-DD | 진행중 |\n| (예: 박OO) | (예: 문서 정리) | YYYY-MM-DD | 대기 |\n| (예: 이OO) | (예: 테스트 자동화) | YYYY-MM-DD | 완료 |\n\n---\n\n---pb---\n\n## 4. 다음 회의\n\n- **일시:** (예: YYYY-MM-DD (요일) HH:MM)\n- **안건:** (예: Action Items 진행 상황 점검)\n\n---\n\n## 5. 특이사항\n\n- (예: 인력 변동, 외부 일정 등 공유할 사항)\n"
+        },
+        {
+          "title": "1:1 면담록",
+          "topic": "meeting",
+          "description": "개인 면담의 주요 논점과 피드백을 기록하는 템플릿입니다.",
+          "order": 2,
+          "createdAt": "2026-07-10",
+          "slug": "one-on-one",
+          "relativePath": "meeting/one-on-one.md",
+          "body": "---\ntitle: \"1:1 면담록\"\ntopic: \"meeting\"\ndescription: \"개인 면담의 주요 논점과 피드백을 기록하는 템플릿입니다.\"\norder: 2\ncreatedAt: \"2026-07-10\"\n---\n\n# 1:1 면담록\n\n**일시:** YYYY-MM-DD (요일) HH:MM　|　**참석자:** 　|　**작성자:**\n\n---\n\n## 1. 안건\n\n- (예: 전분기 목표 달성도 확인)\n- (예: 업무 난이도 및 부하 점검)\n- (예: 커리어 방향 논의)\n\n---\n\n---pb---\n\n## 2. 주요 논의\n\n### 2.1 업무 진행 상황\n\n- (예: 완료한 핵심 과제)\n- (예: 진행 중인 과제 및 이슈)\n- (예: 지원이 필요한 부분)\n\n### 2.2 피드백 (상사 → 팀원)\n\n- (예: 강점 및 칭찬 포인트)\n- (예: 개선 권장 사항)\n\n### 2.3 건의사항 (팀원 → 상사)\n\n- (예: 프로세스 개선 제안)\n- (예: 리소스/환경 요청)\n\n### 2.4 커리어 / 성장\n\n- (예: 희망 직무 및 역량 목표)\n- (예: 필요한 학습/지원)\n\n---\n\n---pb---\n\n## 3. Action Items\n\n| 담당자 | 내용 | 마감일 |\n|--------|------|--------|\n| (예: 팀원) | (예: 역량 강화 과정 수료) | YYYY-MM-DD |\n| (예: 상사) | (예: 멘토링 일정 구성) | YYYY-MM-DD |\n| (예: 팀원) | (예: 프로세스 개선안 작성) | YYYY-MM-DD |\n\n---\n\n---pb---\n\n## 4. 다음 면담 예정일\n\n- **예정일:** YYYY-MM-DD\n- **주요 다룰 주제:** (예: Action Items 점검)\n\n---\n\n## 5. 비고\n\n- (예: 기밀 사항, 후속 조치 필요 메모)\n"
+        },
+        {
+          "title": "이해관계자 회의록",
+          "topic": "meeting",
+          "description": "고객 또는 외부 이해관계자와의 회의 내용을 기록하는 템플릿입니다.",
+          "order": 3,
+          "createdAt": "2026-07-10",
+          "slug": "stakeholder-meeting",
+          "relativePath": "meeting/stakeholder-meeting.md",
+          "body": "---\ntitle: \"이해관계자 회의록\"\ntopic: \"meeting\"\ndescription: \"고객 또는 외부 이해관계자와의 회의 내용을 기록하는 템플릿입니다.\"\norder: 3\ncreatedAt: \"2026-07-10\"\n---\n\n# 이해관계자 회의록\n\n**일시:** YYYY-MM-DD HH:MM ~ HH:MM　|　**참석자:** 　|　**배석자:** 　|　**작성자:**\n\n---\n\n## 1. 회의 목적\n\n> (예: 신규 요구사항 범위 합의 및 일정 조율)\n\n---\n\n---pb---\n\n## 2. 주요 논의 사항\n\n### 2.1 (요구사항 영역)\n\n- 요구사항: (예: 로그인 화면 개선)\n- 의견: (예: 모바일 우선 권장)\n- 합의점: (예: 1차는 데스크톱만 적용)\n\n### 2.2 (요구사항 영역)\n\n- 요구사항: (예: 결제 프로세스 단순화)\n- 의견: (예: 단계 축소 희망)\n- 합의점: (예: 3단계 → 2단계로)\n\n### 2.3 (요구사항 영역)\n\n- 요구사항: (예: 관리자 통계 제공)\n- 의견: (예: 주간 리포트 형태)\n- 합의점: (예: 익월 오픈으로 이동)\n\n---\n\n---pb---\n\n## 3. 결정 사항\n\n| 번호 | 결정 내용 | 관련자 |\n|------|----------|--------|\n| 1 | (예: 범위 축소 후 1차 오픈) | (예: 김OO, 박OO) |\n| 2 | (예: 추가 요구사항은 2차 이관) | (예: 이OO) |\n| 3 | (예: 주간 단위 진행 공유) | (예: 전체) |\n\n---\n\n---pb---\n\n## 4. Action Items\n\n| 담당자 | 내용 | 마감일 |\n|--------|------|--------|\n| (예: 김OO) | (예: 화면 설계서 수정) | YYYY-MM-DD |\n| (예: 박OO) | (예: 일정 역산 산출) | YYYY-MM-DD |\n| (예: 이OO) | (예: 이해관계자 브리핑) | YYYY-MM-DD |\n\n---\n\n---pb---\n\n## 5. 다음 회의\n\n- **일시:** (예: YYYY-MM-DD HH:MM)\n- **목적:** (예: 1차 오픈 범위 최종 확인)\n\n---\n\n## 6. 배포처\n\n- (예: 고객 PM, 내부 리더십)\n"
+        }
+      ]
+    },
+    {
+      "topic": "proposal",
+      "displayName": "제안서",
+      "templates": [
+        {
+          "title": "프로젝트 제안서",
+          "topic": "proposal",
+          "description": "새로운 프로젝트 또는 개선 사항을 제안하는 템플릿입니다.",
+          "order": 1,
+          "createdAt": "2026-07-10",
+          "slug": "project-proposal",
+          "relativePath": "proposal/project-proposal.md",
+          "body": "---\ntitle: \"프로젝트 제안서\"\ntopic: \"proposal\"\ndescription: \"새로운 프로젝트 또는 개선 사항을 제안하는 템플릿입니다.\"\norder: 1\ncreatedAt: \"2026-07-10\"\n---\n\n# 프로젝트 제안서\n\n**제안일:** YYYY-MM-DD　|　**제안자:** 　|　**부서:**\n\n---\n\n## 1. 개요\n\n### 1.1 제안 배경\n\n- (예: 반복되는 수작업으로 인한 지연)\n- (예: 고객 불만 누적)\n\n### 1.2 현황 및 문제점\n\n- (예: 월 20시간 비효율 발생)\n- (예: 데이터 오류 빈번)\n\n---\n\n---pb---\n\n## 2. 제안 내용\n\n### 2.1 목표\n\n- (예: 수작업 제로화)\n- (예: 처리 시간 50% 단축)\n\n### 2.2 세부 내용\n\n- (예: 자동화 파이프라인 구축)\n- (예: 검증 대시보드 제공)\n- (예: 알림 연동)\n\n### 2.3 기대 효과\n\n- (예: 연 240시간 절감)\n- (예: 오류율 90% 감소)\n\n---\n\n---pb---\n\n## 3. 추진 계획\n\n| 단계 | 기간 | 주요 내용 | 산출물 |\n|------|------|----------|--------|\n| 1단계 | ~ YYYY-MM-DD | (예: 요구사항 정의) | (예: 기능 명세) |\n| 2단계 | ~ YYYY-MM-DD | (예: 개발/통합) | (예: 베타 서비스) |\n| 3단계 | ~ YYYY-MM-DD | (예: 검증/오픈) | (예: 운영 이관) |\n\n---\n\n---pb---\n\n## 4. 필요 자원\n\n| 구분 | 내용 | 예상 비용 |\n|------|------|----------|\n| 인력 | (예: 개발 2, 기획 1) | (예: 000만원) |\n| 예산 | (예: 외부 툴 라이선스) | (예: 000만원) |\n| 장비/도구 | (예: 테스트 서버) | (예: 000만원) |\n\n---\n\n---pb---\n\n## 5. 리스크 분석\n\n| 리스크 | 발생 가능성 | 영향 | 대응 방안 |\n|--------|------------|------|----------|\n| (예: 일정 지연) | 중 | 상 | (예: 단계별 마일스톤 관리) |\n| (예: 범위 확대) | 상 | 중 | (예: 변경 통제 프로세스) |\n| (예: 인력 이탈) | 하 | 상 | (예: 문서화 및 백업 인력) |\n\n---\n\n## 6. 결론\n\n> (예: 기대 효과 대비 투입 자원이 합리적이므로 승인을 요청함)\n"
+        },
+        {
+          "title": "기능 요청서",
+          "topic": "proposal",
+          "description": "신규 기능 또는 개선 사항을 요청하는 템플릿입니다.",
+          "order": 2,
+          "createdAt": "2026-07-10",
+          "slug": "feature-request",
+          "relativePath": "proposal/feature-request.md",
+          "body": "---\ntitle: \"기능 요청서\"\ntopic: \"proposal\"\ndescription: \"신규 기능 또는 개선 사항을 요청하는 템플릿입니다.\"\norder: 2\ncreatedAt: \"2026-07-10\"\n---\n\n# 기능 요청서\n\n**요청일:** YYYY-MM-DD　|　**요청자:** 　|　**부서/팀:**\n\n---\n\n## 1. 요청 개요\n\n> (예: 관리자 화면에서 일괄 승인이 가능하도록 요청)\n\n---\n\n---pb---\n\n## 2. 상세 설명\n\n### 2.1 현재 상황\n\n- (예: 건별 수동 승인으로 지연 발생)\n- (예: 오승인 위험 노출)\n\n### 2.2 필요한 기능\n\n- (예: 체크박스 다중 선택)\n- (예: 일괄 승인/거절 버튼)\n\n### 2.3 기대 효과\n\n- (예: 처리 시간 70% 단축)\n- (예: 운영 부하 감소)\n\n---\n\n---pb---\n\n## 3. 우선순위 및 중요도\n\n- **우선순위:** (상 / 중 / 하)\n- **중요도:** (필수 / 중요 / 있으면 좋음)\n- **긴급성:** (즉시 / 1주일 / 1개월 / 언제든)\n\n---\n\n---pb---\n\n## 4. 참고 자료\n\n- (예: 관련 화면 캡처 링크)\n- (예: 유사 사례 URL)\n\n---\n\n## 5. 담당자 의견\n\n> (예: 구현 난이도 낮음, 다음 스프린트 반영 권장)\n"
+        }
+      ]
+    },
+    {
+      "topic": "technical",
+      "displayName": "기술 문서",
+      "templates": [
+        {
+          "title": "API 문서",
+          "topic": "technical",
+          "description": "RESTful API 또는 서비스 인터페이스를 문서화하는 템플릿입니다.",
+          "order": 1,
+          "createdAt": "2026-07-10",
+          "slug": "api-document",
+          "relativePath": "technical/api-document.md",
+          "body": "---\ntitle: \"API 문서\"\ntopic: \"technical\"\ndescription: \"RESTful API 또는 서비스 인터페이스를 문서화하는 템플릿입니다.\"\norder: 1\ncreatedAt: \"2026-07-10\"\n---\n\n# API 문서\n\n**API명:** 　|　**버전:** 　|　**최종 수정일:** YYYY-MM-DD　|　**작성자:**\n\n---\n\n## 1. 개요\n\n> (예: 사용자 조회/생성/수정을 제공하는 REST API)\n\n---\n\n---pb---\n\n## 2. 엔드포인트\n\n### `{METHOD} /api/{resource}`\n\n**설명:** (예: 단건 사용자 조회)\n\n**요청 헤더:**\n\n| 헤더 | 값 | 필수 |\n|------|----|------|\n| Content-Type | application/json | Y |\n| Authorization | Bearer {token} | Y |\n\n**요청 본문:**\n\n```json\n{\n  \"key\": \"value\"\n}\n```\n\n**응답 본문:**\n\n```json\n{\n  \"success\": true,\n  \"data\": {}\n}\n```\n\n**응답 코드:**\n\n| 코드 | 설명 |\n|------|------|\n| 200 | 성공 |\n| 400 | 잘못된 요청 |\n| 401 | 인증 실패 |\n| 500 | 서버 오류 |\n\n---\n\n---pb---\n\n## 3. 데이터 모델\n\n### ModelName\n\n| 필드 | 타입 | 설명 | 필수 |\n|------|------|------|------|\n| id | string | 고유 식별자 | Y |\n| name | string | 이름 | Y |\n| createdAt | datetime | 생성일 | Y |\n\n---\n\n---pb---\n\n## 4. 에러 코드\n\n| 코드 | HTTP 상태 | 메시지 | 설명 |\n|------|----------|--------|------|\n| (예: USER_NOT_FOUND) | 404 | 사용자를 찾을 수 없음 | (예: 잘못된 id) |\n| (예: INVALID_TOKEN) | 401 | 토큰이 유효하지 않음 | (예: 만료) |\n\n---\n\n---pb---\n\n## 5. 변경 이력\n\n| 일자 | 버전 | 변경 내용 | 작성자 |\n|------|------|----------|--------|\n| (예: YYYY-MM-DD) | (예: v1.1.0) | (예: 조회 필터 추가) | (예: 김OO) |\n| (예: YYYY-MM-DD) | (예: v1.0.0) | (예: 최초 작성) | (예: 박OO) |\n"
+        },
+        {
+          "title": "릴리즈 노트",
+          "topic": "technical",
+          "description": "소프트웨어 릴리즈의 변경 사항을 정리하는 템플릿입니다.",
+          "order": 2,
+          "createdAt": "2026-07-10",
+          "slug": "release-note",
+          "relativePath": "technical/release-note.md",
+          "body": "---\ntitle: \"릴리즈 노트\"\ntopic: \"technical\"\ndescription: \"소프트웨어 릴리즈의 변경 사항을 정리하는 템플릿입니다.\"\norder: 2\ncreatedAt: \"2026-07-10\"\n---\n\n# 릴리즈 노트\n\n**제품명:** 　|　**버전:** v1.0.0　|　**릴리즈일:** YYYY-MM-DD　|　**작성자:**\n\n---\n\n## 1. 요약\n\n> (예: 사용자 요청이 많은 일괄 승인 기능 추가 및 안정성 개선)\n\n---\n\n---pb---\n\n## 2. 새로운 기능\n\n### 2.1 주요 기능 1\n\n- (예: 관리자 일괄 승인)\n- (예: 선택 항목 CSV 내보내기)\n\n### 2.2 주요 기능 2\n\n- (예: 다크 모드 지원)\n- (예: 알림 센터 추가)\n\n---\n\n---pb---\n\n## 3. 개선 사항\n\n- (예: 목록 로딩 속도 40% 개선)\n- (예: 모바일 레이아웃 정렬)\n- (예: 에러 메시지 가독성 향상)\n\n---\n\n---pb---\n\n## 4. 버그 수정\n\n- (예: 새로고침 시 임시 저장 유실 수정)\n- (예: 잘못된 권한 체크 오류 수정)\n- (예: 차트 렌더링 깨짐 수정)\n\n---\n\n---pb---\n\n## 5. 호환성\n\n### 5.1 시스템 요구사항\n\n| 항목 | 최소 사양 | 권장 사양 |\n|------|----------|----------|\n| OS | (예: Windows 10) | (예: Windows 11) |\n| 브라우저 | (예: Chrome 110+) | (예: Chrome 최신) |\n\n### 5.2 마이그레이션\n\n> (예: DB 스키마 자동 마이그레이션, 별도 작업 불필요)\n\n---\n\n---pb---\n\n## 6. 알려진 이슈\n\n- (예: Safari에서 알림 지연 확인 중)\n- (예: 대용량 CSV 업로드 시 타임아웃)\n\n---\n\n---pb---\n\n## 7. 설치 방법\n\n```bash\n# (예: 패키지 설치 및 실행)\nnpm install\nnpm run start\n```\n\n---\n\n---pb---\n\n## 8. 롤백 방법\n\n```bash\n# (예: 이전 버전 태그로 되돌리기)\ngit checkout v0.9.0\nnpm run deploy\n```\n\n---\n\n---pb---\n\n## 9. 기여자\n\n- @(예: kim-oo)\n- @(예: park-oo)\n"
+        },
+        {
+          "title": "시스템 아키텍처 문서",
+          "topic": "technical",
+          "description": "시스템의 전체 구조와 구성 요소 간 관계를 설명하는 템플릿입니다.",
+          "order": 3,
+          "createdAt": "2026-07-10",
+          "slug": "architecture",
+          "relativePath": "technical/architecture.md",
+          "body": "---\ntitle: \"시스템 아키텍처 문서\"\ntopic: \"technical\"\ndescription: \"시스템의 전체 구조와 구성 요소 간 관계를 설명하는 템플릿입니다.\"\norder: 3\ncreatedAt: \"2026-07-10\"\n---\n\n# 시스템 아키텍처 문서\n\n**시스템명:** 　|　**버전:** 　|　**작성일:** YYYY-MM-DD　|　**작성자:**\n\n---\n\n## 1. 개요\n\n> (예: 트래픽 급증에 대응하는 확장 가능한 3계층 구조)\n\n---\n\n---pb---\n\n## 2. 시스템 구성도\n\n```\n[Client Layer]\n      |\n[API Gateway]\n      |\n[Service Layer]\n      |\n[Data Layer]\n```\n\n---\n\n---pb---\n\n## 3. 기술 스택\n\n| 계층 | 기술 | 버전 | 비고 |\n|------|------|------|------|\n| Frontend | (예: React) | (예: 19.x) | (예: App Router) |\n| Backend | (예: Node.js) | (예: 22.x) | (예: NestJS) |\n| Database | (예: PostgreSQL) | (예: 16.x) | (예: 복제 구성) |\n| Infrastructure | (예: Kubernetes) | (예: 1.30) | (예: EKS) |\n\n---\n\n---pb---\n\n## 4. 주요 컴포넌트\n\n### 4.1 컴포넌트 A\n\n- **역할:** (예: 인증/인가 처리)\n- **의존성:** (예: User Store)\n- **주요 기능:**\n  1. (예: 토큰 발급)\n  2. (예: 권한 검증)\n\n### 4.2 컴포넌트 B\n\n- **역할:** (예: 비즈니스 오케스트레이션)\n- **의존성:** (예: 컴포넌트 A)\n- **주요 기능:**\n  1. (예: 요청 라우팅)\n  2. (예: 트랜잭션 관리)\n\n---\n\n---pb---\n\n## 5. 데이터 흐름\n\n> (예: 클라이언트 요청이 게이트웨이를 거쳐 서비스→DB로 전달)\n\n```mermaid\nflowchart TD\n    A[Client] --> B[Service]\n    B --> C[Database]\n    B --> D[External API]\n```\n\n---\n\n---pb---\n\n## 6. 보안\n\n- 인증 방식: (예: OAuth2 + JWT)\n- 권한 체계: (예: RBAC)\n- 데이터 암호화: (예: TLS 1.3, 컬럼 암호화)\n\n---\n\n---pb---\n\n## 7. 성능\n\n| 지표 | 목표 | 측정 방법 |\n|------|------|----------|\n| 응답 시간 | < 200ms | (예: APM 샘플링) |\n| 처리량 | 1000 RPS | (예: 부하 테스트) |\n| 가용성 | 99.9% | (예: 모니터링 지표) |\n\n---\n\n## 8. 참고 자료\n\n- (예: 설계 결정 기록 ADR 링크)\n- (예: 관련 위키 페이지)\n"
+        }
+      ]
+    },
+    {
+      "topic": "one-paper",
+      "displayName": "원페이퍼",
+      "templates": [
+        {
+          "title": "경영진 요약 보고서",
+          "topic": "one-paper",
+          "description": "핵심 내용을 한 장 A4로 요약하여 경영진에게 보고하는 템플릿입니다.",
+          "order": 1,
+          "createdAt": "2026-07-10",
+          "slug": "executive-summary",
+          "relativePath": "one-paper/executive-summary.md",
+          "body": "---\ntitle: \"경영진 요약 보고서\"\ntopic: \"one-paper\"\ndescription: \"핵심 내용을 한 장 A4로 요약하여 경영진에게 보고하는 템플릿입니다.\"\norder: 1\ncreatedAt: \"2026-07-10\"\npageMode: single\n---\n\n# 경영진 요약 보고서\n\n**제목:** 　|　**작성일:** YYYY-MM-DD　|　**작성자:** 　|　**수신:**\n\n---\n\n## 1. 핵심 요약\n\n> 3줄 이내로 핵심 내용을 요약합니다.\n\n---\n\n## 2. 현황 및 쟁점\n\n| 항목 | 내용 |\n|------|------|\n| 현황 | |\n| 이슈 | |\n| 의사결정 필요 시점 | |\n\n---\n\n## 3. 제안 및 기대 효과\n\n| 지표 | 현재 | 예상 |\n|------|------|------|\n| | | |\n| | | |\n\n---\n\n## 4. 검토 의견\n\n> \n"
+        },
+        {
+          "title": "의사결정 메모",
+          "topic": "one-paper",
+          "description": "중요 의사결정의 배경과 근거를 한 장 A4에 기록하는 템플릿입니다.",
+          "order": 2,
+          "createdAt": "2026-07-10",
+          "slug": "decision-memo",
+          "relativePath": "one-paper/decision-memo.md",
+          "body": "---\ntitle: \"의사결정 메모\"\ntopic: \"one-paper\"\ndescription: \"중요 의사결정의 배경과 근거를 한 장 A4에 기록하는 템플릿입니다.\"\norder: 2\ncreatedAt: \"2026-07-10\"\npageMode: single\n---\n\n# 의사결정 메모\n\n**제목:** 　|　**일자:** YYYY-MM-DD　|　**의사결정자:** 　|　**작성자:**\n\n---\n\n## 1. 결정 사항\n\n> 한 문장으로 결정 내용을 명시합니다.\n\n---\n\n## 2. 배경\n\n- \n- \n- \n\n---\n\n## 3. 검토 옵션\n\n| 옵션 | 장점 | 단점 | 비용 |\n|------|------|------|------|\n| Option 1 | | | |\n| Option 2 | | | |\n\n---\n\n## 4. 선택 근거 및 영향\n\n- **선택 근거:** \n- **영향:** 조직 / 예산 / 일정 / 리스크\n\n---\n\n## 5. 실행 계획\n\n- [ ] \n- [ ] \n- [ ] \n"
+        }
+      ]
+    }
+  ]
+}
