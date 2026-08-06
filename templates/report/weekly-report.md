@@ -1,6 +1,7 @@
 ---
 title: "주간 업무 보고서"
 topic: "report"
+reportTheme: report
 description: "팀원 개인의 주간 업무 진행 상황을 한 장 A4 보고서로 정리하는 템플릿입니다."
 order: 1
 createdAt: "2026-07-10"

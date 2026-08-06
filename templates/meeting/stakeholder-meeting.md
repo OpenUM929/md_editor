@@ -1,6 +1,7 @@
 ---
 title: "이해관계자 회의록"
 topic: "meeting"
+reportTheme: meeting
 description: "고객 또는 외부 이해관계자와의 회의 내용을 기록하는 템플릿입니다."
 order: 3
 createdAt: "2026-07-10"

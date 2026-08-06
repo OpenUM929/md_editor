@@ -1,12 +1,20 @@
 import { NextRequest, NextResponse } from "next/server"
 import * as server from "@/lib/fs/server"
+import { requireAuth } from "@/lib/require-auth"
 
 type Action =
-  | "readFile" | "writeFile" | "writeMd" | "getFileTree" | "validateRoot"
+  | "readFile" | "writeFile" | "writeMd" | "writeBinary"
+  | "getFileTree" | "validateRoot"
   | "ensureRoot" | "createFile" | "createDirectory" | "deleteFile" | "renameFile"
+  | "deleteDirectory" | "renameDirectory"
   | "writeTemp" | "readTemp" | "discardTemp"
+  | "revealInFolder" | "openRootFolder"
+  | "copyFile"
 
 export async function POST(req: NextRequest) {
+  const guard = requireAuth(req)
+  if (!guard.ok) return guard.response
+
   try {
     const body = await req.json()
     const { action, root } = body as { action: Action; root: string }
@@ -23,6 +31,10 @@ export async function POST(req: NextRequest) {
 
       case "writeMd":
         await server.writeMd(root, body.filePath, body.content)
+        return ok(true)
+
+      case "writeBinary":
+        await server.writeBinary(root, body.filePath, body.content)
         return ok(true)
 
       case "getFileTree":
@@ -50,6 +62,18 @@ export async function POST(req: NextRequest) {
         await server.renameFile(root, body.filePath, body.newPath)
         return ok(true)
 
+      case "deleteDirectory":
+        await server.deleteDirectory(root, body.dirPath)
+        return ok(true)
+
+      case "renameDirectory":
+        await server.renameDirectory(root, body.dirPath, body.newPath)
+        return ok(true)
+
+      case "copyFile":
+        await server.copyFile(root, body.filePath, body.destPath)
+        return ok(true)
+
       case "writeTemp":
         await server.writeTemp(root, body.filePath, body.content)
         return ok(true)
@@ -60,6 +84,12 @@ export async function POST(req: NextRequest) {
       case "discardTemp":
         await server.discardTemp(root, body.filePath)
         return ok(true)
+
+      case "revealInFolder":
+        return ok(await server.revealInFolder(root, body.filePath))
+
+      case "openRootFolder":
+        return ok(await server.openRootFolder(root))
 
       default:
         throw new Error(`알 수 없는 action: ${action}`)

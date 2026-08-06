@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState, useCallback } from "react"
 import { createPortal } from "react-dom"
 import type { Editor } from "@tiptap/react"
+import { continueList } from "@/lib/list-continue"
+import { toast } from "sonner"
 
 type SlashItem = {
   title: string
@@ -11,18 +13,40 @@ type SlashItem = {
   command: (editor: Editor) => void
 }
 
+function readImageFile(file: File, editor: Editor) {
+  if (!file.type.startsWith("image/")) {
+    toast.error("이미지 파일만 선택할 수 있습니다")
+    return
+  }
+  const reader = new FileReader()
+  reader.onload = () => {
+    editor.chain().focus().setImage({ src: reader.result as string }).run()
+  }
+  reader.readAsDataURL(file)
+}
+
 const ITEMS: SlashItem[] = [
   { title: "Heading 1", description: "큰 제목", icon: "H1", command: (e) => e.chain().focus().toggleHeading({ level: 1 }).run() },
   { title: "Heading 2", description: "중간 제목", icon: "H2", command: (e) => e.chain().focus().toggleHeading({ level: 2 }).run() },
   { title: "Heading 3", description: "작은 제목", icon: "H3", command: (e) => e.chain().focus().toggleHeading({ level: 3 }).run() },
-  { title: "Bullet List", description: "글머리 기호 목록", icon: "\u2022", command: (e) => e.chain().focus().toggleBulletList().run() },
-  { title: "Ordered List", description: "번호 목록", icon: "1.", command: (e) => e.chain().focus().toggleOrderedList().run() },
-  { title: "Task List", description: "체크박스 목록", icon: "\u2611", command: (e) => e.chain().focus().toggleTaskList().run() },
+  { title: "Bullet List", description: "글머리 기호 목록", icon: "\u2022", command: (e) => { if (!continueList(e, "bulletList")) e.chain().focus().toggleBulletList().run() } },
+  { title: "Ordered List", description: "번호 목록", icon: "1.", command: (e) => { if (!continueList(e, "orderedList")) e.chain().focus().toggleOrderedList().run() } },
+  { title: "Task List", description: "체크박스 목록", icon: "\u2611", command: (e) => { if (!continueList(e, "taskList")) e.chain().focus().toggleTaskList().run() } },
   { title: "Blockquote", description: "인용구", icon: "\u275D", command: (e) => e.chain().focus().toggleBlockquote().run() },
   { title: "Code Block", description: "코드 블록", icon: "<>", command: (e) => e.chain().focus().toggleCodeBlock().run() },
   { title: "Table", description: "테이블", icon: "\u229E", command: (e) => e.chain().focus().insertTable({ rows: 3, cols: 3 }).run() },
   { title: "Horizontal Rule", description: "구분선", icon: "\u2014", command: (e) => e.chain().focus().setHorizontalRule().run() },
-  { title: "Image", description: "이미지 삽입", icon: "\uD83D\uDDBC", command: (e) => {
+  { title: "Image", description: "이미지 파일 선택", icon: "\uD83D\uDDBC", command: (e) => {
+    const input = document.createElement("input")
+    input.type = "file"
+    input.accept = "image/*"
+    input.onchange = () => {
+      const file = input.files?.[0]
+      if (file) readImageFile(file, e)
+    }
+    input.click()
+  }},
+  { title: "Image URL", description: "이미지 URL 입력", icon: "\uD83D\uDDBC", command: (e) => {
     const url = window.prompt("이미지 URL:")
     if (url) e.chain().focus().setImage({ src: url }).run()
   }},

@@ -16,7 +16,7 @@ import type { TemplateGroup, TemplateMeta } from "@/lib/types"
 import { useTabs } from "@/lib/tab-context"
 import { TemplateDetailModal } from "./template-detail-modal"
 import { useSearchParams } from "next/navigation"
-import { DEFAULT_ROOT } from "@/lib/constants"
+import { getRootPath } from "@/lib/fs-access"
 
 type Props = {
   open: boolean
@@ -31,7 +31,7 @@ export function TemplateBrowserModal({ open, onOpenChange }: Props) {
   const [detailTemplate, setDetailTemplate] = useState<TemplateMeta | null>(null)
   const { openDoc } = useTabs()
   const searchParams = useSearchParams()
-  const root = searchParams.get("root") || DEFAULT_ROOT
+  const root = searchParams.get("root") || getRootPath() || ""
 
   useEffect(() => {
     if (!open) return

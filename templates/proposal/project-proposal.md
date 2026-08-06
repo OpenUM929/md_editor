@@ -1,6 +1,7 @@
 ---
 title: "프로젝트 제안서"
 topic: "proposal"
+reportTheme: proposal
 description: "새로운 프로젝트 또는 개선 사항을 제안하는 템플릿입니다."
 order: 1
 createdAt: "2026-07-10"

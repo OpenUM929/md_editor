@@ -1,0 +1,159 @@
+/* 표준 보고서 양식 — temp/report/보고서_표준양식_가이드.md (1.pdf 실측) 를 CSS 로 옮긴 것
+   화면 미리보기와 PDF 인쇄가 이 파일 하나를 공유한다. */
+
+:root{
+  --page-w: 210mm;  --page-h: 297mm;  --margin: 21mm;
+  --content-w: 168mm; --content-h: 255mm;
+  --gray: #F2F2F2;  --navy: #1B1760;
+}
+
+/* ── A4 페이지 박스 ─────────────────────────────────────── */
+.page{
+  position: relative;
+  width: var(--page-w); height: var(--page-h);
+  padding: var(--margin);
+  margin: 0 auto 18px;
+  background: #fff;
+  box-sizing: border-box;
+  box-shadow: 0 2px 12px rgba(0,0,0,.18);
+  overflow: hidden;
+  font-family: "맑은 고딕","Malgun Gothic","Noto Sans KR",sans-serif;
+  color: #000;
+  font-size: 15pt;
+  line-height: 27pt;
+}
+.page .pno{
+  position: absolute; left: 0; right: 0; bottom: 10mm;
+  text-align: center; font-size: 9pt; color: #666; line-height: 1;
+}
+
+/* ── 제목 박스 ─────────────────────────────────────────── */
+.r-title{
+  height: 44.5pt; line-height: 44.5pt;
+  background: var(--gray);
+  border-top: .7pt solid #000; border-left: .7pt solid #000;
+  border-bottom: 1.4pt solid #000; border-right: 1.4pt solid #000;
+  font-size: 22pt; font-weight: bold; text-align: center;
+  margin-bottom: 10pt;
+}
+.r-byline{ text-align: right; font-size: 12pt; line-height: 18pt; margin-bottom: 14pt; }
+
+/* ── 헤드라인 (원페이퍼 결론) ───────────────────────────── */
+.r-headline{
+  border-top: 1.6pt solid #000; border-bottom: 1.6pt solid #000;
+  padding: 11pt 4pt; margin: 6pt 0 14pt;
+  font-size: 16pt; font-weight: bold; text-align: center; line-height: 24pt;
+}
+
+/* ── 지표 카드 ─────────────────────────────────────────── */
+.r-kpi{ width:100%; border-collapse: collapse; margin: 0 0 16pt; table-layout: fixed; }
+.r-kpi td{ border:.6pt solid #000; text-align:center; padding: 0 3pt 7pt; vertical-align: top; }
+.r-kpi .k-lbl{ display:block; background: var(--gray); font-size:10pt; font-weight:bold;
+               line-height:17pt; margin: 0 -3pt 6pt; border-bottom:.6pt solid #000; }
+.r-kpi .k-val{ display:block; font-size:19pt; font-weight:bold; line-height:24pt; }
+.r-kpi .k-sub{ display:block; font-size:9.5pt; color:#555; line-height:13pt; }
+
+/* ── 섹션 / 소제목 ─────────────────────────────────────── */
+.r-sec{ font-size:17pt; font-weight:bold; line-height:24pt; margin: 26pt 0 10pt; }
+.page > .r-sec:first-child{ margin-top: 0; }
+.r-sub{ font-size:14pt; font-weight:bold; line-height:22pt; margin: 16pt 0 6pt 6pt; }
+.r-sub4{ font-size:12pt; font-weight:bold; line-height:20pt; margin: 12pt 0 4pt 12pt; }
+
+/* ── 붙임 배지 ─────────────────────────────────────────── */
+.r-badge{ margin: 0 0 16pt; }
+.r-badge .bg{
+  display:inline-block; width:63.4pt; height:32pt; line-height:32pt;
+  background: var(--navy); color:#fff; font-size:18pt; font-weight:bold; text-align:center;
+}
+.r-badge .bt{ font-size:18pt; font-weight:bold; margin-left:10pt; vertical-align: 8pt; }
+
+/* ── 본문 개조식 ───────────────────────────────────────── */
+.r-b1,.r-b2{ display:flex; margin: 0 0 2pt; }
+.r-b1 .mk{ width:24pt; flex:none; }
+.r-b2 .mk{ width:20pt; flex:none; margin-left:16pt; }
+.r-b1 .tx,.r-b2 .tx{ flex:1; }
+.r-b2{ font-size:14pt; line-height:24pt; }
+.r-p{ margin: 0 0 4pt; }
+.r-note{ font-size:12.5pt; line-height:19pt; color:#333; margin: 4pt 0 8pt 0; }
+.r-hr{ border-top:.6pt solid #999; margin: 12pt 0; }
+
+/* ── 이미지 ────────────────────────────────────────────── */
+.r-img{ margin: 6pt 0 12pt; text-align:center; }
+.r-img img{ max-width:100%; height:auto; border:.5pt solid #ccc; }
+.r-img.missing{ border:1.5pt dashed #c00; color:#c00; padding:10pt; font-size:11pt; }
+
+/* ── 표 ────────────────────────────────────────────────── */
+.r-tbl{ width:100%; border-collapse:collapse; margin: 4pt 0 12pt; font-size:10.5pt;
+        line-height:15pt; }
+.r-tbl.auto{ table-layout:auto; }    /* 내용에 맞춰 자동 배분 */
+.r-tbl.fixed{ table-layout:fixed; }  /* 구분선 '-' 비율대로 고정 */
+.r-tbl th,.r-tbl td{ border:.6pt solid #000; padding:4pt 5pt; word-break:break-word;
+                     vertical-align:middle; }
+.r-tbl th{ background: var(--gray); font-weight:bold; text-align:center; }
+
+/* ── 코드 ──────────────────────────────────────────────── */
+.r-code{
+  font-family:"D2Coding",Consolas,monospace; font-size:9pt; line-height:13pt;
+  background:#f6f7f9; border:.5pt solid #ccd; padding:6pt 8pt; margin:4pt 0 10pt;
+  white-space: pre-wrap; word-break: break-all;
+}
+
+/* ── 편집 ──────────────────────────────────────────────── */
+.blk{ position: relative; }
+.ed{ outline: none; }
+.ed:hover{ background: rgba(37,99,235,.07); border-radius: 2px; }
+.ed:focus{ background: rgba(37,99,235,.12); box-shadow: 0 0 0 1.5px #2563eb; border-radius: 2px; }
+.r-tbl .ed{ display:block; min-height: 1em; }
+.r-b1 .tx.ed, .r-b2 .tx.ed{ flex: 1; }
+.r-code.ed:focus{ background: #eef2ff; }
+
+/* 열 너비 끌어 조절 — 표에 커서를 올리면 손잡이가 드러난다 */
+.r-tbl th{ position: relative; }
+.colgrip{ position:absolute; top:0; right:-3.5px; width:8px; height:100%;
+          cursor:col-resize; z-index:5; background:transparent; transition:background .12s; }
+.r-tbl:hover .colgrip{ background:#93c5fd; }
+.colgrip:hover, .colgrip.on{ background:#2563eb; }
+
+/* 블록 도구 — 왼쪽 여백에 뜬다 */
+.blk-tools{ position:absolute; left:-27px; top:0; display:none; z-index:20; }
+.blk:hover > .blk-tools{ display:block; }
+.bt-del{ width:21px; height:21px; line-height:1; padding:0; cursor:pointer;
+         border:1px solid #d1d5db; border-radius:4px; background:#fff; color:#b91c1c;
+         font-size:12px; font-family:inherit; }
+.bt-del:hover{ background:#b91c1c; color:#fff; border-color:#b91c1c; }
+
+/* 쪽 이름표 — 페이지 박스 위에 붙는다 (인쇄 제외) */
+.page-label{ width:210mm; margin:14px auto 4px; color:#dbe3ec; font-size:12px;
+             font-family:"맑은 고딕",sans-serif; display:flex; align-items:center; gap:6px; }
+.page-label .pl-no{ background:#1f2937; color:#fff; padding:2px 8px; border-radius:3px;
+                    font-weight:bold; }
+.page-label .pl-name{ padding:2px 8px; border:1px dashed #7c8ba0; border-radius:3px;
+                      min-width:70px; outline:none; }
+.page-label .pl-name:hover{ border-color:#93c5fd; background:rgba(255,255,255,.08); }
+.page-label .pl-name:focus{ border-style:solid; border-color:#2563eb;
+                            background:rgba(255,255,255,.16); color:#fff; }
+.page-label .pl-none{ color:#94a3b8; font-style:italic; }
+.page-label .pl-warn{ color:#fecaca; background:#7f1d1d; padding:2px 8px; border-radius:3px; }
+.page-label.over .pl-no{ background:#b91c1c; }
+
+/* A4 를 넘긴 쪽 — 잘린 위치를 눈에 보이게 */
+.page.over{ box-shadow:0 0 0 2px #b91c1c, 0 2px 12px rgba(0,0,0,.18); overflow:visible; }
+.page.over::after{ content:""; position:absolute; left:0; right:0; bottom:0;
+                   border-top:2px dashed #b91c1c; }
+
+@media print{
+  .colgrip, .blk-tools, .page-label{ display:none !important; }
+  .page.over{ box-shadow:none !important; overflow:hidden; }
+  .page.over::after{ display:none; }
+}
+
+/* ── 인쇄 ──────────────────────────────────────────────── */
+@page{ size: A4; margin: 0; }
+@media print{
+  html,body{ background:#fff !important; margin:0; padding:0; }
+  .noprint{ display:none !important; }
+  .page{ margin:0 !important; box-shadow:none !important; break-after: page; }
+  .page:last-child{ break-after: auto; }
+  .blk:hover{ background: none; }
+  .blk.sel{ outline: none; }
+}

@@ -1,6 +1,7 @@
 ---
 title: "월간 업무 보고서"
 topic: "report"
+reportTheme: report
 description: "월 단위 종합 업무 성과와 주요 지표를 한 장 A4 보고서로 정리하는 템플릿입니다."
 order: 2
 createdAt: "2026-07-10"

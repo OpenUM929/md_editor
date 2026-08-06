@@ -1,10 +1,11 @@
 "use client"
 
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react"
-import { initRootHandle, requestRootFolder, getRootHandle, setRootPath, isPathMode, getRootPath } from "@/lib/fs-access"
+import { initRootHandle, requestRootFolder, getRootHandle, setRootPath } from "@/lib/fs-access"
 
 type WorkspaceContextType = {
   rootHandle: FileSystemDirectoryHandle | null
+  rootPath: string | null
   ready: boolean
   requestFolder: () => Promise<boolean>
   setFolderPath: (path: string) => Promise<boolean>
@@ -18,11 +19,13 @@ const ROOT_PATH_KEY = "md_editor_root_path"
 export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false)
   const [rootHandle, setRootHandleState] = useState<FileSystemDirectoryHandle | null>(null)
+  const [rootPath, setRootPathState] = useState<string | null>(null)
 
   useEffect(() => {
     const storedPath = localStorage.getItem(ROOT_PATH_KEY)
     if (storedPath) {
       setRootPath(storedPath)
+      setRootPathState(storedPath)
       setReady(true)
       return
     }
@@ -57,6 +60,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       const json = await res.json()
       if (!res.ok || json.error || !json.data) return false
       setRootPath(path)
+      setRootPathState(path)
       localStorage.setItem(ROOT_PATH_KEY, path)
       setReady(true)
       return true
@@ -69,12 +73,13 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     const { clearHandle } = await import("@/lib/fs-access")
     await clearHandle()
     setRootHandleState(null)
+    setRootPathState(null)
     localStorage.removeItem(ROOT_PATH_KEY)
     setReady(false)
   }, [])
 
   return (
-    <Ctx.Provider value={{ rootHandle, ready, requestFolder, setFolderPath, resetWorkspace }}>
+    <Ctx.Provider value={{ rootHandle, rootPath, ready, requestFolder, setFolderPath, resetWorkspace }}>
       {children}
     </Ctx.Provider>
   )

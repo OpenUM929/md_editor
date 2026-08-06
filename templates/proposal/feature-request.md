@@ -1,6 +1,7 @@
 ---
 title: "기능 요청서"
 topic: "proposal"
+reportTheme: proposal
 description: "신규 기능 또는 개선 사항을 요청하는 템플릿입니다."
 order: 2
 createdAt: "2026-07-10"

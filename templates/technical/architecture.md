@@ -1,6 +1,7 @@
 ---
 title: "시스템 아키텍처 문서"
 topic: "technical"
+reportTheme: technical
 description: "시스템의 전체 구조와 구성 요소 간 관계를 설명하는 템플릿입니다."
 order: 3
 createdAt: "2026-07-10"

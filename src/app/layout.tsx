@@ -4,7 +4,9 @@ import { ThemeProvider } from "next-themes"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { Toaster } from "@/components/ui/sonner"
 import { DevSWCleanup } from "@/components/dev-sw-cleanup"
+import { UiLocator } from "@/components/dev/ui-locator"
 import "./globals.css"
+import "./report-theme.css"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,6 +45,7 @@ export default function RootLayout({
             <Toaster />
           </TooltipProvider>
           <DevSWCleanup />
+          <UiLocator />
         </ThemeProvider>
       </body>
     </html>

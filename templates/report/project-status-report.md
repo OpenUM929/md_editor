@@ -1,6 +1,7 @@
 ---
 title: "프로젝트 현황 보고서"
 topic: "report"
+reportTheme: report
 description: "진행 중인 프로젝트의 상태와 진행률을 한 장 A4 보고서로 정리하는 템플릿입니다."
 order: 3
 createdAt: "2026-07-10"

@@ -1,6 +1,7 @@
 ---
 title: "팀 회의록"
 topic: "meeting"
+reportTheme: meeting
 description: "정기 팀 회의의 안건, 논의 내용, 결정 사항을 기록하는 템플릿입니다."
 order: 1
 createdAt: "2026-07-10"

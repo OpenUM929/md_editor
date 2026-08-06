@@ -39,7 +39,11 @@ export function TemplateTab() {
 
   return (
     <>
-      <div className="px-3 py-3">
+      <div
+        data-layout="템플릿 탭"
+        data-ui-file="src/components/template/template-tab.tsx"
+        className="px-3 py-3"
+      >
         <Button
           variant="outline"
           className="w-full justify-start gap-2 text-sm"

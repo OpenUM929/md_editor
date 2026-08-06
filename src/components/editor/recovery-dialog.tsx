@@ -9,7 +9,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { useMemo } from "react"
+import { useMemo, useEffect } from "react"
 
 type Props = {
   open: boolean
@@ -50,6 +50,23 @@ export function RecoveryDialog({ open, onApply, onDiscard, onClose, originalCont
   const addLines = diffLines.filter((l) => l.type === "add").length
   const removeLines = diffLines.filter((l) => l.type === "remove").length
   const hasChanges = addLines > 0 || removeLines > 0
+
+  useEffect(() => {
+    if (!open) return
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "d") {
+        e.preventDefault()
+        e.stopPropagation()
+        onDiscard()
+      } else if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        e.preventDefault()
+        e.stopPropagation()
+        onApply()
+      }
+    }
+    document.addEventListener("keydown", handler, true)
+    return () => document.removeEventListener("keydown", handler, true)
+  }, [open, onApply, onDiscard])
 
   return (
     <Dialog open={open} onOpenChange={(next) => { if (!next) onClose() }}>
@@ -109,11 +126,11 @@ export function RecoveryDialog({ open, onApply, onDiscard, onClose, originalCont
           </div>
 
         <DialogFooter className="gap-2 shrink-0">
-          <Button variant="outline" onClick={onDiscard}>
-            임시 파일 삭제
+          <Button variant="outline" onClick={onDiscard} title="Ctrl+D">
+            임시 파일 삭제 (Ctrl+D)
           </Button>
-          <Button onClick={onApply}>
-            복구 (임시 파일 적용)
+          <Button onClick={onApply} title="Ctrl+Enter">
+            복구 (Ctrl+Enter)
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -1,6 +1,7 @@
 ---
 title: "릴리즈 노트"
 topic: "technical"
+reportTheme: technical
 description: "소프트웨어 릴리즈의 변경 사항을 정리하는 템플릿입니다."
 order: 2
 createdAt: "2026-07-10"

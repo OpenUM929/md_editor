@@ -1,6 +1,7 @@
 ---
 title: "API 문서"
 topic: "technical"
+reportTheme: technical
 description: "RESTful API 또는 서비스 인터페이스를 문서화하는 템플릿입니다."
 order: 1
 createdAt: "2026-07-10"

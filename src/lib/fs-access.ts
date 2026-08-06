@@ -41,6 +41,15 @@ async function api<T>(action: string, extra: Record<string, unknown> = {}): Prom
   return json.data as T
 }
 
+function arrayBufferToBase64(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer)
+  let binary = ""
+  for (let i = 0; i < bytes.byteLength; i++) {
+    binary += String.fromCharCode(bytes[i])
+  }
+  return btoa(binary)
+}
+
 // --- Meta IndexedDB for handle persistence ---
 const META_DB_NAME = "md_editor_meta"
 const META_DB_VERSION = 1
@@ -193,6 +202,32 @@ async function getOrCreateFile(
   const parent = await getSubDir(dir, parts, true)
   if (!parent) throw new Error("디렉토리를 찾을 수 없습니다")
   return await parent.getFileHandle(fileName, { create: true })
+}
+
+/**
+ * 저장 파일이 있는 폴더를 OS 탐색기에서 연다. 경로 모드에서만 동작(절대경로 반환).
+ * FSA(폴더 선택) 모드는 브라우저 샌드박스라 절대경로를 알 수 없어 null 을 반환한다.
+ */
+export async function revealInFolder(filePath: string): Promise<string | null> {
+  if (!isPathMode()) return null
+  try {
+    return await api<string>("revealInFolder", { filePath })
+  } catch {
+    return null
+  }
+}
+
+/**
+ * 루트 워크스페이스 폴더를 OS 탐색기에서 연다. 경로 모드에서만 동작(절대경로 반환).
+ * FSA(폴더 선택) 모드는 브라우저 샌드박스라 절대경로를 알 수 없어 null 을 반환한다.
+ */
+export async function openRootFolder(): Promise<string | null> {
+  if (!isPathMode()) return null
+  try {
+    return await api<string>("openRootFolder")
+  } catch {
+    return null
+  }
 }
 
 // --- File tree ---
@@ -535,6 +570,147 @@ export async function renameFile(
   await discardTempFile("", oldPath)
 }
 
+export async function deleteDirectory(
+  _root: string,
+  dirPath: string
+): Promise<void> {
+  if (isPathMode()) {
+    await api("deleteDirectory", { dirPath })
+    return
+  }
+  const handle = ensureRoot()
+  const parts = dirPath.replace(/\\/g, "/").split("/")
+  const dirName = parts.pop()!
+  const parent = await getSubDir(handle, parts, false)
+  if (parent) {
+    await parent.removeEntry(dirName, { recursive: true })
+  }
+}
+
+export async function renameDirectory(
+  _root: string,
+  oldPath: string,
+  newPath: string
+): Promise<void> {
+  if (isPathMode()) {
+    await api("renameDirectory", { dirPath: oldPath, newPath })
+    return
+  }
+  // FSA에는 디렉토리 이동/이름변경 API가 없으므로 재귀 복사 후 삭제한다.
+  const handle = ensureRoot()
+  const oldSegments = oldPath.replace(/\\/g, "/").split("/")
+  const oldDir = await getSubDir(handle, oldSegments, false)
+  if (!oldDir) throw new Error("폴더를 찾을 수 없습니다")
+
+  const newSegments = newPath.replace(/\\/g, "/").split("/")
+  const newDir = await getSubDir(handle, newSegments, true)
+  if (!newDir) throw new Error("대상 폴더를 만들 수 없습니다")
+
+  await copyDirContents(oldDir, newDir)
+
+  const parentSegments = oldSegments.slice(0, -1)
+  const dirName = oldSegments[oldSegments.length - 1]
+  const parent = await getSubDir(handle, parentSegments, false)
+  if (parent) {
+    await parent.removeEntry(dirName, { recursive: true })
+  }
+}
+
+async function copyDirContents(
+  from: FileSystemDirectoryHandle,
+  to: FileSystemDirectoryHandle
+): Promise<void> {
+  for await (const [name, entry] of from.entries()) {
+    if (entry.kind === "directory") {
+      const srcSub = await from.getDirectoryHandle(name)
+      const destSub = await to.getDirectoryHandle(name, { create: true })
+      await copyDirContents(srcSub, destSub)
+    } else {
+      const srcFile = await (await from.getFileHandle(name)).getFile()
+      const destHandle = await to.getFileHandle(name, { create: true })
+      const writable = await destHandle.createWritable()
+      await writable.write(await srcFile.arrayBuffer())
+      await writable.close()
+    }
+  }
+}
+
+async function fileExists(filePath: string): Promise<boolean> {
+  if (isPathMode()) {
+    try {
+      await api("readFile", { filePath })
+      return true
+    } catch {
+      return false
+    }
+  }
+  const handle = ensureRoot()
+  try {
+    const parts = filePath.replace(/\\/g, "/").split("/")
+    const fileName = parts.pop()!
+    const dir = await getSubDir(handle, parts, false)
+    if (!dir) return false
+    await dir.getFileHandle(fileName)
+    return true
+  } catch {
+    return false
+  }
+}
+
+export async function duplicateFile(_root: string, filePath: string): Promise<string> {
+  if (!filePath.endsWith(FILE_EXTENSION)) {
+    throw new Error(".md 파일만 복제할 수 있습니다")
+  }
+
+  const parts = filePath.replace(/\\/g, "/").split("/")
+  const fileName = parts.pop()!
+  const baseName = fileName.replace(/\.md$/, "")
+  const parent = parts.join("/")
+
+  let candidate = parent ? `${parent}/${baseName} (복사본).md` : `${baseName} (복사본).md`
+  let counter = 2
+  while (await fileExists(candidate)) {
+    candidate = parent
+      ? `${parent}/${baseName} (복사본 ${counter}).md`
+      : `${baseName} (복사본 ${counter}).md`
+    counter++
+  }
+
+  if (isPathMode()) {
+    await api("copyFile", { filePath, destPath: candidate })
+  } else {
+    const handle = ensureRoot()
+    const srcHandle = await getFile(handle, filePath)
+    if (!srcHandle) throw new Error("원본 파일을 찾을 수 없습니다")
+    const content = await (await srcHandle.getFile()).text()
+
+    const destFileHandle = await getOrCreateFile(handle, candidate)
+    const writable = await destFileHandle.createWritable()
+    await writable.write(content)
+    await writable.close()
+  }
+  return candidate
+}
+
+/** 파일 또는 폴더를 다른 폴더로 이동한다(이름은 유지). destDir=""이면 루트로 이동. */
+export async function moveFile(
+  _root: string,
+  filePath: string,
+  destDir: string
+): Promise<string> {
+  const normalized = filePath.replace(/\\/g, "/")
+  const fileName = normalized.split("/").pop()!
+  const cleanDest = destDir.replace(/\\/g, "/").replace(/^\/+|\/+$/g, "")
+  const newPath = cleanDest ? `${cleanDest}/${fileName}` : fileName
+  if (newPath === normalized) return newPath
+  if (normalized.endsWith(FILE_EXTENSION)) {
+    await renameFile("", normalized, newPath)
+  } else {
+    await renameDirectory("", normalized, newPath)
+  }
+  return newPath
+}
+
 // --- Template utilities ---
 
 export async function addDocumentFromTemplate(
@@ -552,22 +728,85 @@ export async function addDocumentFromTemplate(
   await writable.close()
 }
 
+export async function revealInFileExplorer(filePath: string): Promise<void> {
+  if (!isPathMode()) return
+  await api("revealInFolder", { filePath })
+}
+
+export async function openRootInFileExplorer(): Promise<void> {
+  if (!isPathMode()) return
+  await api("openRootFolder", {})
+}
+
 // --- Import ---
 
 export async function importDocuments(
-  files: { path: string; content: string }[]
+  files: { path: string; content: string }[],
+  basePath: string = ""
 ): Promise<void> {
+  const resolvePath = (filePath: string) =>
+    basePath ? `${basePath}/${filePath}` : filePath
+
   if (isPathMode()) {
     for (const file of files) {
-      await api("writeMd", { filePath: file.path, content: file.content })
+      await api("writeMd", { filePath: resolvePath(file.path), content: file.content })
     }
     return
   }
   const handle = ensureRoot()
   for (const file of files) {
-    const fileHandle = await getOrCreateFile(handle, file.path)
+    const fileHandle = await getOrCreateFile(handle, resolvePath(file.path))
     const writable = await fileHandle.createWritable()
     await writable.write(file.content)
     await writable.close()
   }
+}
+
+export async function importBinaryFiles(
+  files: { path: string; data: ArrayBuffer }[],
+  basePath: string = ""
+): Promise<void> {
+  const resolvePath = (filePath: string) =>
+    basePath ? `${basePath}/${filePath}` : filePath
+
+  if (isPathMode()) {
+    for (const file of files) {
+      const base64 = arrayBufferToBase64(file.data)
+      await api("writeBinary", { filePath: resolvePath(file.path), content: base64 })
+    }
+    return
+  }
+
+  const handle = ensureRoot()
+  for (const file of files) {
+    const fileHandle = await getOrCreateFile(handle, resolvePath(file.path))
+    const writable = await fileHandle.createWritable()
+    await writable.write(file.data)
+    await writable.close()
+  }
+}
+
+export async function saveHwpxBlob(
+  root: string,
+  filePath: string,
+  blob: Blob
+): Promise<void> {
+  const handle = ensureRoot()
+  const fileHandle = await getOrCreateFile(handle, filePath)
+  const writable = await fileHandle.createWritable()
+  await writable.write(blob)
+  await writable.close()
+}
+
+/** 임의 바이너리(예: .docx)를 워크스페이스 내부 경로에 저장(FSA 모드). */
+export async function saveBinaryFile(
+  _root: string,
+  filePath: string,
+  blob: Blob
+): Promise<void> {
+  const handle = ensureRoot()
+  const fileHandle = await getOrCreateFile(handle, filePath)
+  const writable = await fileHandle.createWritable()
+  await writable.write(blob)
+  await writable.close()
 }

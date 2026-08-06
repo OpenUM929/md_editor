@@ -1,6 +1,7 @@
 ---
 title: "1:1 면담록"
 topic: "meeting"
+reportTheme: meeting
 description: "개인 면담의 주요 논점과 피드백을 기록하는 템플릿입니다."
 order: 2
 createdAt: "2026-07-10"

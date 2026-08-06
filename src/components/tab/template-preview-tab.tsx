@@ -7,9 +7,9 @@ import { getTemplateContent, createFileFromTemplate } from "@/lib/templates-clie
 import { mdToHtml } from "@/lib/markdown"
 import { TiptapEditor } from "@/components/editor/tiptap-editor"
 import { DEFAULT_MARGIN_PRESET } from "@/lib/a4-margins"
-import { type PageMode, pageModeFromMarkdown } from "@/lib/page-mode"
+import { type ReportTheme, reportThemeFromMarkdown } from "@/lib/report-theme"
 import { useTabs, type TemplateTab } from "@/lib/tab-context"
-import { DEFAULT_ROOT } from "@/lib/constants"
+import { getRootPath } from "@/lib/fs-access"
 import { useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 
@@ -22,19 +22,19 @@ function TemplatePreviewTabInner({ tab }: Props) {
   const [loading, setLoading] = useState(!tab.fetched)
   const [html, setHtml] = useState("")
   const [using, setUsing] = useState(false)
-  const [previewPageMode, setPreviewPageMode] = useState<PageMode>(() =>
-    pageModeFromMarkdown(tab.content || "")
+  const [previewReportTheme, setPreviewReportTheme] = useState<ReportTheme>(() =>
+    reportThemeFromMarkdown(tab.content || "")
   )
   const searchParams = useSearchParams()
-  const root = searchParams.get("root") || DEFAULT_ROOT
+  const root = searchParams.get("root") || getRootPath() || ""
 
   useEffect(() => {
     if (tab.fetched && tab.content) {
       // tab.content 는 원본 markdown(프론트매터 포함)임
-      const mode = pageModeFromMarkdown(tab.content)
+      const theme = reportThemeFromMarkdown(tab.content)
       mdToHtml(tab.content).then((h) => {
         setHtml(h)
-        setPreviewPageMode(mode)
+        setPreviewReportTheme(theme)
       })
       return
     }
@@ -46,7 +46,7 @@ function TemplatePreviewTabInner({ tab }: Props) {
           return
         }
         const body = detail.body || ""
-        setPreviewPageMode(pageModeFromMarkdown(body))
+        setPreviewReportTheme(reportThemeFromMarkdown(body))
         setTemplateFetched(tab.id, body)
         const rendered = await mdToHtml(body)
         setHtml(rendered)
@@ -96,8 +96,9 @@ function TemplatePreviewTabInner({ tab }: Props) {
         <div className="flex-1 overflow-y-auto overflow-x-auto">
         <TiptapEditor
           content={html}
-          pageMode={previewPageMode}
+          pageMode="bunri"
           marginPresetId={DEFAULT_MARGIN_PRESET}
+          reportTheme={previewReportTheme}
           editable={false}
         />
       </div>

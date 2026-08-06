@@ -26,7 +26,11 @@ export function TabBar() {
   if (tabs.length === 0) return null
 
   return (
-    <div className="flex items-center border-b bg-muted/30 overflow-x-auto shrink-0 print:hidden">
+    <div
+      data-layout="탭 바"
+      data-ui-file="src/components/tab/tab-bar.tsx"
+      className="flex items-center border-b bg-muted/30 overflow-x-auto shrink-0 print:hidden"
+    >
       {tabs.map((tab) => {
         const isActive = tab.id === activeTabId
         const icon =

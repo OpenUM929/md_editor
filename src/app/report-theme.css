@@ -1,0 +1,400 @@
+/* 보고서 양식 테마 — rp_gen static/report.css(1.pdf 실측)의 양식 규칙을 이식한 것.
+   편집 화면(.a4-canvas .ProseMirror)·인쇄(.print-pages)·PDF 미리보기(.pdf-preview-sheet)
+   세 표면에 동일하게 적용되어 "고치는 화면 = 나오는 결과"를 보장한다.
+
+   적용 방식: 문서 프론트매터의 reportTheme 값 → 표면 컨테이너에
+   `report-theme report-theme--{값}` 클래스가 붙는다(src/lib/report-theme.ts).
+   - 편집: .a4-canvas 래퍼에 클래스(React 제어) → 자식 .ProseMirror 에 상속 적용
+   - 인쇄/PDF: .print-pages / .pdf-preview-sheet 자체에 클래스
+   양식은 CSS가 그리고, 수정은 Tiptap 이 담당한다.
+
+   layout.tsx 에서 globals.css 다음에 import 하므로 동일 특정도에서 이 파일이 우선한다. */
+
+/* ── 공통 베이스 (.report-theme) ─────────────────────────────
+   rp_gen report.css 의 본문 타이포·색·간격을 세 표면에 공통 적용 */
+:is(
+  .a4-canvas.report-theme .ProseMirror,
+  .print-pages.report-theme,
+  .pdf-preview-sheet.report-theme
+) {
+  --rt-gray: #f2f2f2;
+  --rt-accent: #1b1760;
+  font-family: "맑은 고딕", "Malgun Gothic", "Noto Sans KR", var(--font-sans), sans-serif;
+  color: #000;
+  font-size: 12pt;
+  line-height: 1.9;
+}
+
+/* 제목박스 (rp_gen .r-title) — h1 을 표준양식 제목박스로 */
+:is(
+  .a4-canvas.report-theme .ProseMirror,
+  .print-pages.report-theme,
+  .pdf-preview-sheet.report-theme
+) h1 {
+  background: var(--rt-gray);
+  border-top: 0.7pt solid #000;
+  border-left: 0.7pt solid #000;
+  border-bottom: 1.4pt solid #000;
+  border-right: 1.4pt solid #000;
+  font-size: 20pt;
+  font-weight: bold;
+  text-align: center;
+  padding: 8pt 6pt;
+  margin: 0 0 14pt;
+  line-height: 1.25;
+}
+
+/* 섹션/소제목 (rp_gen .r-sec / .r-sub / .r-sub4) */
+:is(
+  .a4-canvas.report-theme .ProseMirror,
+  .print-pages.report-theme,
+  .pdf-preview-sheet.report-theme
+) h2 {
+  font-size: 15pt;
+  font-weight: bold;
+  line-height: 1.4;
+  margin: 20pt 0 8pt;
+  padding-left: 8pt;
+  border-left: 4pt solid var(--rt-accent);
+}
+:is(
+  .a4-canvas.report-theme .ProseMirror,
+  .print-pages.report-theme,
+  .pdf-preview-sheet.report-theme
+) h3 {
+  font-size: 13pt;
+  font-weight: bold;
+  line-height: 1.4;
+  margin: 14pt 0 5pt 6pt;
+}
+:is(
+  .a4-canvas.report-theme .ProseMirror,
+  .print-pages.report-theme,
+  .pdf-preview-sheet.report-theme
+) h4 {
+  font-size: 11.5pt;
+  font-weight: bold;
+  line-height: 1.35;
+  margin: 10pt 0 4pt 12pt;
+}
+
+/* 본문 문단 (rp_gen .r-p) */
+:is(
+  .a4-canvas.report-theme .ProseMirror,
+  .print-pages.report-theme,
+  .pdf-preview-sheet.report-theme
+) p {
+  margin: 0 0 5pt;
+}
+
+/* 개조식 목록 (rp_gen .r-b1 □ / .r-b2 ○) — 표준 마크다운 목록을 개조식 마커로 */
+:is(
+  .a4-canvas.report-theme .ProseMirror,
+  .print-pages.report-theme,
+  .pdf-preview-sheet.report-theme
+) ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 2pt 0 8pt;
+}
+:is(
+  .a4-canvas.report-theme .ProseMirror,
+  .print-pages.report-theme,
+  .pdf-preview-sheet.report-theme
+) ul > li {
+  position: relative;
+  padding-left: 20pt;
+  margin: 0 0 3pt;
+}
+:is(
+  .a4-canvas.report-theme .ProseMirror,
+  .print-pages.report-theme,
+  .pdf-preview-sheet.report-theme
+) ul > li::before {
+  content: "□";
+  position: absolute;
+  left: 2pt;
+  color: var(--rt-accent);
+}
+/* 중첩 목록은 한 단계 안쪽(○)으로 */
+:is(
+  .a4-canvas.report-theme .ProseMirror,
+  .print-pages.report-theme,
+  .pdf-preview-sheet.report-theme
+) ul ul > li::before {
+  content: "○";
+  font-size: 0.8em;
+}
+
+/* 표 (rp_gen .r-tbl) — 헤더 회색, 얇은 실선 */
+:is(
+  .a4-canvas.report-theme .ProseMirror,
+  .print-pages.report-theme,
+  .pdf-preview-sheet.report-theme
+) table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  margin: 5pt 0 12pt;
+  font-size: 10.5pt;
+  line-height: 1.4;
+}
+:is(
+  .a4-canvas.report-theme .ProseMirror,
+  .print-pages.report-theme,
+  .pdf-preview-sheet.report-theme
+) :is(th, td) {
+  border: 0.6pt solid #000;
+  padding: 4pt 5pt;
+  word-break: break-word;
+  vertical-align: middle;
+}
+:is(
+  .a4-canvas.report-theme .ProseMirror,
+  .print-pages.report-theme,
+  .pdf-preview-sheet.report-theme
+) th {
+  background: var(--rt-gray);
+  font-weight: bold;
+  text-align: center;
+}
+
+/* 코드 (rp_gen .r-code) */
+:is(
+  .a4-canvas.report-theme .ProseMirror,
+  .print-pages.report-theme,
+  .pdf-preview-sheet.report-theme
+) pre {
+  font-family: "D2Coding", Consolas, var(--font-mono), monospace;
+  font-size: 9pt;
+  line-height: 1.45;
+  background: #f6f7f9;
+  border: 0.5pt solid #ccd;
+  padding: 6pt 8pt;
+  margin: 4pt 0 10pt;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* 인용 = 참고(주) (rp_gen .r-note) */
+:is(
+  .a4-canvas.report-theme .ProseMirror,
+  .print-pages.report-theme,
+  .pdf-preview-sheet.report-theme
+) blockquote {
+  font-size: 11pt;
+  line-height: 1.5;
+  color: #333;
+  margin: 4pt 0 8pt;
+  padding: 4pt 10pt;
+  border-left: 3pt solid #7a8ba0;
+  background: #f5f7fa;
+}
+
+/* 이미지 (rp_gen .r-img) */
+:is(
+  .a4-canvas.report-theme .ProseMirror,
+  .print-pages.report-theme,
+  .pdf-preview-sheet.report-theme
+) img {
+  max-width: 100%;
+  height: auto;
+  border: 0.5pt solid #ccc;
+  display: block;
+  margin: 6pt auto 12pt;
+}
+
+/* 수평선 */
+:is(
+  .a4-canvas.report-theme .ProseMirror,
+  .print-pages.report-theme,
+  .pdf-preview-sheet.report-theme
+) hr {
+  border: none;
+  border-top: 0.6pt solid #999;
+  margin: 12pt 0;
+}
+
+/* ── 카테고리: 보고서(report) ────────────────────────────────
+   rp_gen 표준양식 그대로. 네이비 강조. 베이스가 이미 이 형태이므로 강조색만 확정 */
+:is(
+  .a4-canvas.report-theme--report .ProseMirror,
+  .print-pages.report-theme--report,
+  .pdf-preview-sheet.report-theme--report
+) {
+  --rt-accent: #1b1760;
+}
+
+/* ── 카테고리: 회의록(meeting) ───────────────────────────────
+   제목박스 대신 간결한 밑줄형 헤더. 참석자/결정사항 표 강조. 청록 강조 */
+:is(
+  .a4-canvas.report-theme--meeting .ProseMirror,
+  .print-pages.report-theme--meeting,
+  .pdf-preview-sheet.report-theme--meeting
+) {
+  --rt-accent: #0f766e;
+}
+:is(
+  .a4-canvas.report-theme--meeting .ProseMirror,
+  .print-pages.report-theme--meeting,
+  .pdf-preview-sheet.report-theme--meeting
+) h1 {
+  background: transparent;
+  border: none;
+  border-bottom: 2pt solid var(--rt-accent);
+  text-align: left;
+  font-size: 18pt;
+  padding: 0 0 6pt;
+  color: var(--rt-accent);
+}
+:is(
+  .a4-canvas.report-theme--meeting .ProseMirror,
+  .print-pages.report-theme--meeting,
+  .pdf-preview-sheet.report-theme--meeting
+) th {
+  background: color-mix(in srgb, var(--rt-accent) 14%, #fff);
+}
+
+/* ── 카테고리: 제안서(proposal) ──────────────────────────────
+   섹션 넘버링 강조 + 비교표 강조. 파랑 강조 */
+:is(
+  .a4-canvas.report-theme--proposal .ProseMirror,
+  .print-pages.report-theme--proposal,
+  .pdf-preview-sheet.report-theme--proposal
+) {
+  --rt-accent: #1d4ed8;
+}
+:is(
+  .a4-canvas.report-theme--proposal .ProseMirror,
+  .print-pages.report-theme--proposal,
+  .pdf-preview-sheet.report-theme--proposal
+) h1 {
+  background: var(--rt-accent);
+  color: #fff;
+  border: none;
+  padding: 12pt 8pt;
+}
+:is(
+  .a4-canvas.report-theme--proposal .ProseMirror,
+  .print-pages.report-theme--proposal,
+  .pdf-preview-sheet.report-theme--proposal
+) h2 {
+  border-left-width: 6pt;
+  background: color-mix(in srgb, var(--rt-accent) 8%, transparent);
+  padding: 4pt 8pt;
+}
+
+/* ── 카테고리: 기술문서(technical) ───────────────────────────
+   코드·표 가독 우선. 슬레이트 강조. 제목박스는 좌측 굵은 바 */
+:is(
+  .a4-canvas.report-theme--technical .ProseMirror,
+  .print-pages.report-theme--technical,
+  .pdf-preview-sheet.report-theme--technical
+) {
+  --rt-accent: #334155;
+}
+:is(
+  .a4-canvas.report-theme--technical .ProseMirror,
+  .print-pages.report-theme--technical,
+  .pdf-preview-sheet.report-theme--technical
+) h1 {
+  background: transparent;
+  border: none;
+  border-left: 8pt solid var(--rt-accent);
+  text-align: left;
+  padding: 2pt 0 2pt 12pt;
+  font-size: 18pt;
+}
+:is(
+  .a4-canvas.report-theme--technical .ProseMirror,
+  .print-pages.report-theme--technical,
+  .pdf-preview-sheet.report-theme--technical
+) pre {
+  font-size: 9.5pt;
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+/* ── 카테고리: 원페이퍼(one-paper) ───────────────────────────
+   한 장 결론형. 첫 인용문을 헤드라인 밴드(rp_gen .r-headline)로. 네이비 강조 */
+:is(
+  .a4-canvas.report-theme--one-paper .ProseMirror,
+  .print-pages.report-theme--one-paper,
+  .pdf-preview-sheet.report-theme--one-paper
+) {
+  --rt-accent: #1b1760;
+  font-size: 11.5pt;
+}
+:is(
+  .a4-canvas.report-theme--one-paper .ProseMirror,
+  .print-pages.report-theme--one-paper,
+  .pdf-preview-sheet.report-theme--one-paper
+) blockquote:first-of-type {
+  border-top: 1.6pt solid #000;
+  border-bottom: 1.6pt solid #000;
+  border-left: none;
+  background: transparent;
+  padding: 11pt 4pt;
+  margin: 6pt 0 14pt;
+  font-size: 14pt;
+  font-weight: bold;
+  text-align: center;
+  color: #000;
+}
+/* 작성자·연락처 줄 (제목박스 바로 다음 문단) — 가운데·연회색 소자 */
+:is(
+  .a4-canvas.report-theme--one-paper .ProseMirror,
+  .print-pages.report-theme--one-paper,
+  .pdf-preview-sheet.report-theme--one-paper
+) h1 + p {
+  text-align: center;
+  color: #44546a;
+  font-size: 10.5pt;
+  margin: -8pt 0 12pt;
+}
+/* KPI 스트립 (문서 첫 표) — 라벨은 소자·회색, 값(첫 본문행)은 큰 네이비 볼드.
+   a4.md 1페이지의 개발기간/규모/비용/이행 지표 밴드를 재현 */
+:is(
+  .a4-canvas.report-theme--one-paper .ProseMirror,
+  .print-pages.report-theme--one-paper,
+  .pdf-preview-sheet.report-theme--one-paper
+) table:first-of-type th {
+  font-size: 9.5pt;
+  font-weight: bold;
+  color: #44546a;
+  background: var(--rt-gray);
+}
+:is(
+  .a4-canvas.report-theme--one-paper .ProseMirror,
+  .print-pages.report-theme--one-paper,
+  .pdf-preview-sheet.report-theme--one-paper
+) table:first-of-type tbody tr:first-child td {
+  font-size: 15pt;
+  font-weight: bold;
+  color: var(--rt-accent);
+  text-align: center;
+  padding: 7pt 4pt 4pt;
+}
+:is(
+  .a4-canvas.report-theme--one-paper .ProseMirror,
+  .print-pages.report-theme--one-paper,
+  .pdf-preview-sheet.report-theme--one-paper
+) table:first-of-type tbody tr:first-child td strong {
+  font-weight: bold;
+}
+
+/* ── 인쇄 시 강조색·배경 유지 ────────────────────────────────
+   globals.css @media print 가 .print-pages * { color:#000 } 로 강제하므로,
+   양식의 강조/반전 텍스트는 여기서 되살린다 (색 인쇄 보존) */
+@media print {
+  .print-pages.report-theme--proposal h1 {
+    color: #fff !important;
+  }
+  .print-pages.report-theme--meeting h1 {
+    color: var(--rt-accent) !important;
+  }
+  .print-pages.report-theme th {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

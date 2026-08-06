@@ -1,5 +1,6 @@
 import fs from "fs/promises"
 import path from "path"
+import { exec } from "child_process"
 import { FILE_EXTENSION, TEMP_DIR, TEMP_EXTENSION } from "@/lib/constants"
 import { htmlToMd } from "@/lib/markdown"
 
@@ -18,6 +19,31 @@ function safePath(root: string, filePath: string): string {
   return resolved
 }
 
+/** 저장된 파일이 있는 폴더를 OS 파일 탐색기에서 연다(가능하면 파일을 선택). 절대경로 반환. */
+export async function revealInFolder(root: string, filePath: string): Promise<string> {
+  const p = safePath(await safeRoot(root), filePath)
+  const platform = process.platform
+  let cmd: string
+  if (platform === "win32") cmd = `explorer /select,"${p.replace(/\//g, "\\")}"`
+  else if (platform === "darwin") cmd = `open -R "${p}"`
+  else cmd = `xdg-open "${path.dirname(p)}"`
+  // explorer /select 는 성공해도 종료코드 1 을 반환하므로 오류를 무시한다.
+  await new Promise<void>((resolve) => exec(cmd, () => resolve()))
+  return p
+}
+
+/** 루트 폴더를 OS 파일 탐색기에서 연다. 절대경로 반환. */
+export async function openRootFolder(root: string): Promise<string> {
+  const p = await safeRoot(root)
+  const platform = process.platform
+  let cmd: string
+  if (platform === "win32") cmd = `explorer "${p.replace(/\//g, "\\")}"`
+  else if (platform === "darwin") cmd = `open "${p}"`
+  else cmd = `xdg-open "${p}"`
+  await new Promise<void>((resolve) => exec(cmd, () => resolve()))
+  return p
+}
+
 export async function readFile(root: string, filePath: string): Promise<string> {
   const p = safePath(await safeRoot(root), filePath)
   return await fs.readFile(p, "utf-8")
@@ -31,7 +57,14 @@ export async function writeFile(root: string, filePath: string, html: string): P
 
 export async function writeMd(root: string, filePath: string, md: string): Promise<void> {
   const p = safePath(await safeRoot(root), filePath)
+  await fs.mkdir(path.dirname(p), { recursive: true })
   await fs.writeFile(p, md, "utf-8")
+}
+
+export async function writeBinary(root: string, filePath: string, base64: string): Promise<void> {
+  const p = safePath(await safeRoot(root), filePath)
+  await fs.mkdir(path.dirname(p), { recursive: true })
+  await fs.writeFile(p, Buffer.from(base64, "base64"))
 }
 
 type TreeNode = { name: string; path: string; type: "file" | "directory"; children?: TreeNode[] }
@@ -108,6 +141,27 @@ export async function renameFile(root: string, oldPath: string, newPath: string)
   const newP = safePath(r, newPath)
   await fs.mkdir(path.dirname(newP), { recursive: true })
   await fs.rename(oldP, newP)
+}
+
+export async function deleteDirectory(root: string, dirPath: string): Promise<void> {
+  const p = safePath(await safeRoot(root), dirPath)
+  await fs.rm(p, { recursive: true, force: true })
+}
+
+export async function renameDirectory(root: string, oldPath: string, newPath: string): Promise<void> {
+  const r = await safeRoot(root)
+  const oldP = safePath(r, oldPath)
+  const newP = safePath(r, newPath)
+  await fs.mkdir(path.dirname(newP), { recursive: true })
+  await fs.rename(oldP, newP)
+}
+
+export async function copyFile(root: string, filePath: string, destPath: string): Promise<void> {
+  const r = await safeRoot(root)
+  const srcP = safePath(r, filePath)
+  const destP = safePath(r, destPath)
+  await fs.mkdir(path.dirname(destP), { recursive: true })
+  await fs.copyFile(srcP, destP)
 }
 
 function tempFileName(filePath: string): string {

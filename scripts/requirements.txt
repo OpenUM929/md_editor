@@ -1,0 +1,4 @@
+# HWPX 내보내기(공인 라이브러리). Python 3.10+ 필요.
+#   pip install -r scripts/requirements.txt
+# 앱 서버(next dev/start)를 실행하는 환경에 설치돼 있어야 HWPX 저장이 동작한다.
+python-hwpx>=4.2.0

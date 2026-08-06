@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>print</title>
+<link rel="stylesheet" href="/static/report.css?v={{ ver }}">
+<style>html,body{margin:0;padding:0;background:#fff}</style>
+</head>
+<body>
+<div id="view"></div>
+<script id="data" type="application/json">{{ blocks|tojson }}</script>
+<script src="/static/paginate.js?v={{ ver }}"></script>
+<script>
+  (function () {
+    var blocks = JSON.parse(document.getElementById("data").textContent);
+    function go() {
+      var n = Paginator.paginate(blocks, document.getElementById("view"));
+      document.title = n + "p";
+      document.documentElement.setAttribute("data-pages", n);
+      document.documentElement.setAttribute("data-ready", "1");
+    }
+    // 이미지가 다 실린 뒤에 분할해야 높이가 정확하다
+    var imgs = [];
+    blocks.forEach(function (b) {
+      var m = /src="([^"]+)"/.exec(b.html || "");
+      if (b.kind === "image" && m) imgs.push(m[1]);
+    });
+    var left = imgs.length;
+    if (!left) { go(); return; }
+    imgs.forEach(function (src) {
+      var im = new Image();
+      im.onload = im.onerror = function () { if (--left === 0) go(); };
+      im.src = src;
+    });
+    setTimeout(function () {
+      if (!document.documentElement.getAttribute("data-ready")) go();
+    }, 8000);
+  })();
+</script>
+</body>
+</html>

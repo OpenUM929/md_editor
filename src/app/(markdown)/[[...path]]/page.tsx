@@ -2,16 +2,16 @@
 
 import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
-import { readMdFile, getRecoveryInfo } from "@/lib/fs-access"
+import { readMdFile, getRecoveryInfo, getRootPath } from "@/lib/fs-access"
 import { mdToHtml } from "@/lib/markdown"
-import { DEFAULT_ROOT } from "@/lib/constants"
+import { resolveImageSrcs } from "@/lib/doc-image"
 import { Workspace } from "@/components/tab/workspace"
 
 export default function MarkdownPage() {
   const params = useParams()
   const pathSegments = params.path as string[] | undefined
   const filePath = pathSegments ? pathSegments.map(decodeURIComponent).join("/") : ""
-  const rootDir = DEFAULT_ROOT
+  const rootDir = getRootPath() || ""
 
   const [content, setContent] = useState("")
   const [recoveryInfo, setRecoveryInfo] = useState<{ tempContent: string; originalContent: string; tempSavedAt: string } | null>(null)
@@ -22,7 +22,7 @@ export default function MarkdownPage() {
     if (!filePath.endsWith(".md")) return
 
     Promise.all([
-      readMdFile(rootDir, filePath).then(mdToHtml),
+      readMdFile(rootDir, filePath).then(mdToHtml).then((h) => resolveImageSrcs(h, filePath)),
       getRecoveryInfo(rootDir, filePath),
     ])
       .then(([html, recovery]) => {

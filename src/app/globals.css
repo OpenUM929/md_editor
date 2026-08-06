@@ -166,6 +166,58 @@
   margin: 1em 0;
 }
 
+/* 헤딩 자동 번호(Word/한글 "다단계 목록"과 동일한 개념) — 토글은 heading-numbering.ts,
+   버튼은 editor-toolbar.tsx("번호 매기기"). 본문 텍스트는 건드리지 않고 CSS counter로만
+   그린다 — 헤딩을 추가/삭제/재배치해도 항상 다시 계산된다. h5/h6 은 번호를 매기지 않는다. */
+.a4-canvas.heading-numbered .ProseMirror,
+.print-pages.heading-numbered,
+.pdf-preview-sheet.heading-numbered {
+  counter-reset: hn1;
+}
+.a4-canvas.heading-numbered .ProseMirror h1,
+.print-pages.heading-numbered h1,
+.pdf-preview-sheet.heading-numbered h1 {
+  counter-reset: hn2 hn3 hn4;
+  counter-increment: hn1;
+}
+.a4-canvas.heading-numbered .ProseMirror h1::before,
+.print-pages.heading-numbered h1::before,
+.pdf-preview-sheet.heading-numbered h1::before {
+  content: counter(hn1) ". ";
+}
+.a4-canvas.heading-numbered .ProseMirror h2,
+.print-pages.heading-numbered h2,
+.pdf-preview-sheet.heading-numbered h2 {
+  counter-reset: hn3 hn4;
+  counter-increment: hn2;
+}
+.a4-canvas.heading-numbered .ProseMirror h2::before,
+.print-pages.heading-numbered h2::before,
+.pdf-preview-sheet.heading-numbered h2::before {
+  content: counter(hn1) "." counter(hn2) " ";
+}
+.a4-canvas.heading-numbered .ProseMirror h3,
+.print-pages.heading-numbered h3,
+.pdf-preview-sheet.heading-numbered h3 {
+  counter-reset: hn4;
+  counter-increment: hn3;
+}
+.a4-canvas.heading-numbered .ProseMirror h3::before,
+.print-pages.heading-numbered h3::before,
+.pdf-preview-sheet.heading-numbered h3::before {
+  content: counter(hn1) "." counter(hn2) "." counter(hn3) " ";
+}
+.a4-canvas.heading-numbered .ProseMirror h4,
+.print-pages.heading-numbered h4,
+.pdf-preview-sheet.heading-numbered h4 {
+  counter-increment: hn4;
+}
+.a4-canvas.heading-numbered .ProseMirror h4::before,
+.print-pages.heading-numbered h4::before,
+.pdf-preview-sheet.heading-numbered h4::before {
+  content: counter(hn1) "." counter(hn2) "." counter(hn3) "." counter(hn4) " ";
+}
+
 /* A4 캔버스: 실제 A4 용지 컨테이너를 쌓는 부모 */
 .a4-canvas {
   position: relative;
@@ -221,9 +273,18 @@
 .print-pages table {
   width: 100%;
   max-width: 100%;
+  /* Tiptap 리사이즈 표는 인라인 min-width(px)를 붙여 max-width:100% 를 무력화한다.
+     min-width 를 컨테이너 폭으로 강제 덮어써 표가 용지 밖으로 넘치지 않게 한다. */
+  min-width: 100% !important;
   table-layout: fixed;
   border-collapse: collapse;
   margin: 0.75em 0;
+}
+/* 리사이즈 표 래퍼도 A4 폭 안으로 가둔다 */
+.a4-canvas .ProseMirror .tableWrapper,
+.print-pages .tableWrapper {
+  max-width: 100%;
+  overflow-x: hidden;
 }
 .a4-canvas .ProseMirror :is(th, td),
 .print-pages :is(th, td),
@@ -242,6 +303,11 @@
   background: color-mix(in oklab, var(--muted) 70%, transparent);
   font-weight: 600;
   text-align: left;
+}
+
+/* 셀 선택 시각화 (드래그/Shift+클릭) */
+.ProseMirror .selectedCell {
+  background-color: #c8d8f8;
 }
 
 /* Page Break 노드 — 용지 경계 + 여백을 포함한 gap */
@@ -323,9 +389,10 @@
 
 /* ── 인쇄 ── */
 @media print {
+  /* 여백은 런타임에 주입되는 #print-page-rule 의 @page 가 프리셋 값으로 지정한다.
+     (여기서 margin 을 고정하지 않아야 화면 프리셋과 인쇄가 일치한다) */
   @page {
     size: A4;
-    margin: 0;
   }
 
   html,
@@ -480,6 +547,21 @@
 .a4-canvas--ilche .page-break,
 .pdf-preview-sheet .page-break {
   display: none !important;
+}
+
+/* 분리(bunri): page-break 요소의 "간격(정렬 여백)"은 유지하되 보이는 선·라벨만 숨긴다.
+   흰 용지 사이 간격이 이미 페이지 경계를 보여주므로, 매 페이지 높이가 다른
+   구분선을 지워 시각적 잡음을 없앤다. (요소 자체를 display:none 하면 다음 용지로
+   내용을 밀어내는 marginTop 정렬이 사라지므로 자식 마크만 숨김) */
+.a4-canvas--bunri :is(.page-break-line, .page-break-label, .page-break-number) {
+  visibility: hidden !important;
+}
+.a4-canvas--bunri .page-break--auto .page-break-gap::before,
+.a4-canvas--bunri .page-break--auto .page-break-gap::after {
+  border-top-color: transparent !important;
+}
+.a4-canvas--bunri .page-break--manual::after {
+  content: none !important;
 }
 .pdf-preview-footer {
   display: flex;
