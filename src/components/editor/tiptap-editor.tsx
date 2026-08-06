@@ -207,7 +207,7 @@ export function TiptapEditor({
       CustomHorizontalRule,
     ],
     editorProps: {
-      transformPasted: (slice) => slice,
+      transformPasted: (slice) => stripEmptyBoundaryParagraphs(slice),
       transformPastedHTML: (html) => stripEmptyBoundaryMarkup(html),
       transformPastedText: (text) =>
         text.replace(/^\n+/, "").replace(/\n+\s*$/, "").replace(/\n{3,}/g, "\n\n"),
