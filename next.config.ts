@@ -9,6 +9,9 @@ const withSerwist = withSerwistInit({
 
 const config: NextConfig = {
   allowedDevOrigins: ["10.10.102.223"],
+  turbopack: {
+    root: process.cwd(),
+  },
 }
 
 const nextConfig = process.env.NODE_ENV === "production" ? withSerwist(config) : config

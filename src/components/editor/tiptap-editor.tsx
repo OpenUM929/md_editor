@@ -2,6 +2,7 @@
 
 import { useEditor, EditorContent } from "@tiptap/react"
 import { Fragment, Slice, type Node as PMNode } from "@tiptap/pm/model"
+import type { EditorView } from "@tiptap/pm/view"
 import { mergeAttributes } from "@tiptap/core"
 import StarterKit from "@tiptap/starter-kit"
 import Underline from "@tiptap/extension-underline"
@@ -129,6 +130,22 @@ function stripEmptyBoundaryParagraphs(slice: Slice): Slice {
 const isEmptyParagraphMarkup = (el: Element): boolean =>
   el.tagName === "P" && el.textContent?.trim() === ""
 
+// 워크스페이스 안에서 단어/문장을 복사 → 붙여넣기하면 ProseMirror가 복사 슬라이스를
+// "빈 문단 + 내용 + 빈 문단"(os:0 oe:0 블록)으로 미리 확장해 원래 문단을 쪼갠다.
+// 그대로 두면 문단 앞뒤로 빈 문단이 생기고 저장 시 줄바꿈 3개(`\n\n\n`)로 남는다.
+// 경계 빈 문단을 벗겨낸 뒤 남은 조각이 "단일 문단"이고 붙여넣기 대상도 문단이면
+// 완전히 연(os:1 oe:1) 슬라이스로 펼쳐 인라인 병합시킨다.
+// 선택 교체든 커서 삽입이든 동일하게 적용해 문단이 쪼개지지 않게 한다.
+// 목록/제목/표/이미지처럼 문단이 아닌 블록은 그대로 블록 삽입을 유지한다.
+function flattenSingleTextblock(slice: Slice, view: EditorView): Slice {
+  if (slice.content.childCount !== 1) return slice
+  const only = slice.content.firstChild
+  if (!only || only.type.name !== "paragraph" || only.textContent.trim() === "") return slice
+  const parent = view.state.selection.$from.parent
+  if (parent.type.name !== "paragraph") return slice
+  return new Slice(slice.content, 1, 1)
+}
+
 function stripEmptyBoundaryMarkup(html: string): string {
   const body = new DOMParser().parseFromString(html, "text/html").body
   const trim = (dir: "start" | "end") => {
@@ -206,11 +223,17 @@ export function TiptapEditor({
       PageBreak,
       CustomHorizontalRule,
     ],
-    editorProps: {
-      transformPasted: (slice) => stripEmptyBoundaryParagraphs(slice),
-      transformPastedHTML: (html) => stripEmptyBoundaryMarkup(html),
-      transformPastedText: (text) =>
-        text.replace(/^\n+/, "").replace(/\n+\s*$/, "").replace(/\n{3,}/g, "\n\n"),
+editorProps: {
+      transformPasted: (slice, view) => {
+        const stripped = stripEmptyBoundaryParagraphs(slice)
+        return flattenSingleTextblock(stripped, view)
+      },
+      transformPastedHTML: (html) => {
+        return stripEmptyBoundaryMarkup(html)
+      },
+      transformPastedText: (text) => {
+        return text.replace(/^\n+/, "").replace(/\n+\s*$/, "").replace(/\n{3,}/g, "\n\n")
+      },
       attributes: {
         class: cn(
           "prose dark:prose-invert max-w-none focus:outline-none",
