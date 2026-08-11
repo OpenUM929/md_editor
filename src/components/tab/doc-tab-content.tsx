@@ -8,7 +8,7 @@ import { RecoveryDialog } from "@/components/editor/recovery-dialog"
 import { useAutoSave } from "@/hooks/use-auto-save"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Save, Loader2, PanelLeftOpen } from "lucide-react"
+import { Save, Loader2, PanelLeftOpen, Columns2, PanelRightClose } from "lucide-react"
 import { toast } from "sonner"
 import { saveMdFile, applyTempToOriginal, discardTempFile, readMdFile, saveHwpxBlob, saveBinaryFile, isPathMode, revealInFolder, getRootPath } from "@/lib/fs-access"
 import { useSidebar } from "@/lib/sidebar-context"
@@ -56,6 +56,11 @@ export function DocTabContent({ tab, recoveryInfo }: Props) {
     frontmatterFromHtml(tab.content || "")
   )
   const [loading, setLoading] = useState(!tab.content)
+  const [showSource, setShowSource] = useState(false)
+  // 원본 패널의 편집 드래프트. null 이면 편집기 상태를 따라간다(표시 전용).
+  const [sourceDraft, setSourceDraft] = useState<string | null>(null)
+  const sourcePushing = useRef(false)
+  const sourceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const sidebar = useSidebar()
   const editorRef = useRef<Editor | null>(null)
 
@@ -65,6 +70,38 @@ export function DocTabContent({ tab, recoveryInfo }: Props) {
     () => injectFrontmatter(content, frontmatter),
     [content, frontmatter]
   )
+
+  // 원본(MD 소스) 분할 보기용: 현재 편집기 내용을 저장 시점과 동일한 MD로 되돌린다.
+  const sourceMarkdown = useMemo(() => htmlToMd(contentForPersist), [contentForPersist])
+
+  // 원본 패널에 표시할 텍스트: 드래프트(편집 중)가 있으면 그걸, 없으면 편집기 상태를 쓴다.
+  const visibleSource = sourceDraft ?? sourceMarkdown
+
+  const handleSourceChange = useCallback((v: string) => {
+    setSourceDraft(v)
+    if (sourceTimer.current) clearTimeout(sourceTimer.current)
+    sourceTimer.current = setTimeout(() => {
+      mdToHtml(v).then((html) => {
+        const nextFm = frontmatterFromMarkdown(v)
+        sourcePushing.current = true
+        setFrontmatter(nextFm)
+        setContent(html)
+        updateTabContent(tab.id, injectFrontmatter(html, nextFm))
+        queueMicrotask(() => { sourcePushing.current = false })
+      })
+    }, 500)
+  }, [tab.id, updateTabContent])
+
+  // 원본 패널 닫으면 드래프트 해제 → 편집기 상태를 다시 따라간다.
+  const handleToggleSource = useCallback(() => {
+    setShowSource((v) => {
+      if (v) {
+        setSourceDraft(null)
+        if (sourceTimer.current) { clearTimeout(sourceTimer.current); sourceTimer.current = null }
+      }
+      return !v
+    })
+  }, [])
 
   const { markSaved } = useAutoSave(tab.root, tab.filePath, contentForPersist, setAutoSaveStatus)
 
@@ -125,6 +162,8 @@ export function DocTabContent({ tab, recoveryInfo }: Props) {
     (html: string) => {
       setContent(html)
       setHasUnsaved(true)
+      // 원본 패널에서 밀어넣은 HTML은 이미 최신 프론트매터를 심었으므로 중복 갱신을 건너뛴다.
+      if (sourcePushing.current) return
       // Tiptap 은 getHTML()에서 <template data-frontmatter> 를 떨궈낸다. 비활성 탭은
       // 언마운트되어 재마운트 시 모든 상태(테마/페이지모드)를 tab.content 에서 재구성하므로,
       // 탭 저장본에는 프론트매터를 반드시 재부착해야 테마가 유실되지 않는다.
@@ -318,6 +357,17 @@ export function DocTabContent({ tab, recoveryInfo }: Props) {
           <AutoSaveIndicator status={autoSaveStatus} />
         </div>
         <div className="flex items-center gap-2 overflow-x-auto min-w-0">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleToggleSource}
+            className="shrink-0"
+            aria-pressed={showSource}
+            title={showSource ? "원본 보기 닫기" : "원본(MD 소스)을 좌우로 나눠 보기"}
+          >
+            {showSource ? <PanelRightClose className="size-4" /> : <Columns2 className="size-4" />}
+            원본
+          </Button>
           <EditorToolbar editor={editor} pageMode={pageMode} onPageModeChange={setPageMode} marginPresetId={marginPresetId} onMarginPresetChange={setMarginPresetId} reportTheme={reportTheme} onReportThemeChange={handleReportThemeChange} headingNumbering={headingNumbering} onHeadingNumberingChange={handleHeadingNumberingChange} onSaveHwpx={handleSaveHwpx} onSaveDocx={handleSaveDocx} />
           <Button onClick={handleSave} disabled={isSaving} size="sm" className="shrink-0">
             {isSaving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
@@ -325,17 +375,30 @@ export function DocTabContent({ tab, recoveryInfo }: Props) {
           </Button>
         </div>
       </div>
-      <div className="flex-1 overflow-y-auto overflow-x-auto print:overflow-visible">
-        <TiptapEditor
-          content={content}
-          onChange={handleContentChange}
-          onSave={handleSave}
-          onEditorReady={(e) => { setEditor(e); editorRef.current = e }}
-          pageMode={pageMode}
-          marginPresetId={marginPresetId}
-          reportTheme={reportTheme}
-          headingNumbering={headingNumbering}
-        />
+      <div className={cn("flex-1 min-h-0 flex", showSource && "print:hidden")}>
+        {showSource && (
+          <div className="w-1/2 min-w-0 border-r bg-muted/30 print:hidden">
+            <textarea
+              value={visibleSource}
+              onChange={(e) => handleSourceChange(e.target.value)}
+              spellCheck={false}
+              aria-label="원본 MD 소스"
+              className="h-full w-full resize-none bg-transparent p-4 font-mono text-xs leading-relaxed whitespace-pre-wrap break-words outline-none focus:outline-none"
+            />
+          </div>
+        )}
+        <div className={cn("min-w-0 overflow-y-auto overflow-x-auto print:overflow-visible", showSource ? "w-1/2" : "flex-1")}>
+          <TiptapEditor
+            content={content}
+            onChange={handleContentChange}
+            onSave={handleSave}
+            onEditorReady={(e) => { setEditor(e); editorRef.current = e }}
+            pageMode={pageMode}
+            marginPresetId={marginPresetId}
+            reportTheme={reportTheme}
+            headingNumbering={headingNumbering}
+          />
+        </div>
       </div>
     </>
   )
