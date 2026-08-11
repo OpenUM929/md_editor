@@ -55,7 +55,7 @@ import {
   FileType2,
   ListTree,
 } from "lucide-react"
-import { useState, useCallback, useRef, useEffect, forwardRef } from "react"
+import { useState, useCallback, useRef, useEffect, forwardRef, createContext, useContext } from "react"
 import type { Editor } from "@tiptap/react"
 import { continueList } from "@/lib/list-continue"
 import type { MarginPresetId } from "@/lib/a4-margins"
@@ -78,23 +78,36 @@ const HEADING_ACCENT_THICKNESS_PRESETS = [
 
 const HEADING_ACCENT_COLOR_DEFAULT = "#1b1760"
 
+// Alt 키팁 활성 상태를 ToolButton 배지 렌더에 전달하는 컨텍스트.
+const KeytipsContext = createContext(false)
+
 const ToolButton = forwardRef<HTMLButtonElement, {
   onClick?: React.MouseEventHandler<HTMLButtonElement>
   isActive?: boolean
   children: React.ReactNode
   label: string
   disabled?: boolean
+  keytip?: string
+  className?: string
 }>(function ToolButton({
   onClick,
   isActive = false,
   children,
   label,
   disabled = false,
+  keytip,
+  className,
   ...rest
 }, ref) {
+  const keytipsActive = useContext(KeytipsContext)
   return (
-    <Button ref={ref} variant={isActive ? "default" : "ghost"} size="icon-sm" onClick={onClick} aria-label={label} title={label} disabled={disabled} {...rest}>
+    <Button ref={ref} variant={isActive ? "default" : "ghost"} size="icon-sm" onClick={onClick} aria-label={label} title={label} disabled={disabled} data-keytip={keytip} className={cn(keytip && "relative", className)} {...rest}>
       {children}
+      {keytip && keytipsActive && (
+        <kbd className="pointer-events-none absolute -right-0.5 -top-0.5 z-10 rounded-[3px] border border-border bg-background px-0.5 text-[9px] font-semibold leading-[1.1] text-foreground shadow-sm">
+          {keytip}
+        </kbd>
+      )}
     </Button>
   )
 })
@@ -136,6 +149,53 @@ type Props = {
 export function EditorToolbar({ editor, pageMode = "bunri", onPageModeChange, marginPresetId = "medium", onMarginPresetChange, reportTheme = "plain", onReportThemeChange, headingNumbering = false, onHeadingNumberingChange, onSaveHwpx, onSaveDocx }: Props) {
   const [isFullscreen, setIsFullscreen] = useState(false)
   const editorRef = useRef(editor)
+
+  // Alt 키팁: Alt 단독 press → 활성, 영숫자 키 → 툴바 버튼 실행, Alt release/기타 키 → 비활성.
+  const toolbarRootRef = useRef<HTMLDivElement>(null)
+  const [keytipsActive, setKeytipsActive] = useState(false)
+  const keytipsActiveRef = useRef(keytipsActive)
+
+  useEffect(() => {
+    keytipsActiveRef.current = keytipsActive
+  }, [keytipsActive])
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      // Alt 단독(다른 수정자 없이) → 브라우저 메뉴 포커스 방지 + 키팁 활성
+      if (event.key === "Alt" && !event.ctrlKey && !event.shiftKey && !event.metaKey) {
+        event.preventDefault()
+        setKeytipsActive(true)
+        return
+      }
+      if (!keytipsActiveRef.current) return
+      // 활성 중 영숫자 단일 키 → 해당 data-keytip 버튼 실행
+      if (/^[a-zA-Z0-9]$/.test(event.key)) {
+        const root = toolbarRootRef.current
+        const target = root?.querySelector<HTMLButtonElement>(`[data-keytip="${event.key.toUpperCase()}"]`)
+        if (target && !target.disabled) {
+          event.preventDefault()
+          target.click()
+          setKeytipsActive(false)
+        }
+        return
+      }
+      // 그 외 조합키가 아닌 단일 키 → 키팁 닫기
+      if (!event.ctrlKey && !event.shiftKey && !event.metaKey) {
+        setKeytipsActive(false)
+      }
+    }
+    const onKeyUp = (event: KeyboardEvent) => {
+      if (event.key === "Alt") {
+        setKeytipsActive(false)
+      }
+    }
+    window.addEventListener("keydown", onKeyDown)
+    window.addEventListener("keyup", onKeyUp)
+    return () => {
+      window.removeEventListener("keydown", onKeyDown)
+      window.removeEventListener("keyup", onKeyUp)
+    }
+  }, [])
 
   useEffect(() => {
     editorRef.current = editor
@@ -267,34 +327,37 @@ export function EditorToolbar({ editor, pageMode = "bunri", onPageModeChange, ma
   const inTable = editor.isActive("table")
 
   return (
+    <KeytipsContext.Provider value={keytipsActive}>
     <div
+      ref={toolbarRootRef}
       data-layout="에디터 툴바"
       data-ui-file="src/components/editor/editor-toolbar.tsx"
+      data-keytips={keytipsActive || undefined}
       className="flex items-center gap-0.5 min-w-0"
     >
       {/* 포맷 버튼 그룹 (공간 부족 시 가로 스크롤) */}
       <div className="flex items-center gap-0.5 flex-nowrap overflow-x-auto min-w-0 whitespace-nowrap">
       {/* Undo / Redo */}
-      <ToolButton onClick={() => editor.chain().focus().undo().run()} isActive={false} label="Undo">
+      <ToolButton onClick={() => editor.chain().focus().undo().run()} isActive={false} label="Undo" keytip="Z">
         <Undo2 className="size-4" />
       </ToolButton>
-      <ToolButton onClick={() => editor.chain().focus().redo().run()} isActive={false} label="Redo">
+      <ToolButton onClick={() => editor.chain().focus().redo().run()} isActive={false} label="Redo" keytip="Y">
         <Redo2 className="size-4" />
       </ToolButton>
 
       <Separator orientation="vertical" className="mx-1 h-6" />
 
       {/* Bold / Italic / Underline / Strike */}
-      <ToolButton onClick={() => editor.chain().focus().toggleBold().run()} isActive={editor.isActive("bold")} label="Bold (Ctrl+B)">
+      <ToolButton onClick={() => editor.chain().focus().toggleBold().run()} isActive={editor.isActive("bold")} label="Bold (Ctrl+B)" keytip="B">
         <Bold className="size-4" />
       </ToolButton>
-      <ToolButton onClick={() => editor.chain().focus().toggleItalic().run()} isActive={editor.isActive("italic")} label="Italic (Ctrl+I)">
+      <ToolButton onClick={() => editor.chain().focus().toggleItalic().run()} isActive={editor.isActive("italic")} label="Italic (Ctrl+I)" keytip="I">
         <Italic className="size-4" />
       </ToolButton>
-      <ToolButton onClick={() => editor.chain().focus().toggleUnderline().run()} isActive={editor.isActive("underline")} label="Underline (Ctrl+U)">
+      <ToolButton onClick={() => editor.chain().focus().toggleUnderline().run()} isActive={editor.isActive("underline")} label="Underline (Ctrl+U)" keytip="U">
         <Underline className="size-4" />
       </ToolButton>
-      <ToolButton onClick={() => editor.chain().focus().toggleStrike().run()} isActive={editor.isActive("strike")} label="Strikethrough">
+      <ToolButton onClick={() => editor.chain().focus().toggleStrike().run()} isActive={editor.isActive("strike")} label="Strikethrough" keytip="S">
         <Strikethrough className="size-4" />
       </ToolButton>
 
@@ -485,6 +548,7 @@ export function EditorToolbar({ editor, pageMode = "bunri", onPageModeChange, ma
         onClick={() => onHeadingNumberingChange?.(!headingNumbering)}
         isActive={headingNumbering}
         label="번호 매기기 (제목 자동 번호, Word/한글 다단계 목록과 동일)"
+        keytip="X"
       >
         <ListTree className="size-4" />
       </ToolButton>
@@ -513,39 +577,39 @@ export function EditorToolbar({ editor, pageMode = "bunri", onPageModeChange, ma
       </Select>
 
       {/* 정렬 */}
-      <ToolButton onClick={() => editor.chain().focus().setTextAlign("left").run()} isActive={editor.isActive({ textAlign: "left" })} label="왼쪽 정렬">
+      <ToolButton onClick={() => editor.chain().focus().setTextAlign("left").run()} isActive={editor.isActive({ textAlign: "left" })} label="왼쪽 정렬" keytip="L">
         <AlignLeft className="size-4" />
       </ToolButton>
-      <ToolButton onClick={() => editor.chain().focus().setTextAlign("center").run()} isActive={editor.isActive({ textAlign: "center" })} label="가운데 정렬">
+      <ToolButton onClick={() => editor.chain().focus().setTextAlign("center").run()} isActive={editor.isActive({ textAlign: "center" })} label="가운데 정렬" keytip="C">
         <AlignCenter className="size-4" />
       </ToolButton>
-      <ToolButton onClick={() => editor.chain().focus().setTextAlign("right").run()} isActive={editor.isActive({ textAlign: "right" })} label="오른쪽 정렬">
+      <ToolButton onClick={() => editor.chain().focus().setTextAlign("right").run()} isActive={editor.isActive({ textAlign: "right" })} label="오른쪽 정렬" keytip="R">
         <AlignRight className="size-4" />
       </ToolButton>
-      <ToolButton onClick={() => editor.chain().focus().setTextAlign("justify").run()} isActive={editor.isActive({ textAlign: "justify" })} label="양쪽 정렬">
+      <ToolButton onClick={() => editor.chain().focus().setTextAlign("justify").run()} isActive={editor.isActive({ textAlign: "justify" })} label="양쪽 정렬" keytip="J">
         <AlignJustify className="size-4" />
       </ToolButton>
 
       <Separator orientation="vertical" className="mx-1 h-6" />
 
       {/* Lists */}
-      <ToolButton onClick={() => continueList(editor, "bulletList") || editor.chain().focus().toggleBulletList().run()} isActive={editor.isActive("bulletList")} label="Bullet List">
+      <ToolButton onClick={() => continueList(editor, "bulletList") || editor.chain().focus().toggleBulletList().run()} isActive={editor.isActive("bulletList")} label="Bullet List" keytip="1">
         <List className="size-4" />
       </ToolButton>
-      <ToolButton onClick={() => continueList(editor, "orderedList") || editor.chain().focus().toggleOrderedList().run()} isActive={editor.isActive("orderedList")} label="Ordered List">
+      <ToolButton onClick={() => continueList(editor, "orderedList") || editor.chain().focus().toggleOrderedList().run()} isActive={editor.isActive("orderedList")} label="Ordered List" keytip="2">
         <ListOrdered className="size-4" />
       </ToolButton>
-      <ToolButton onClick={() => continueList(editor, "taskList") || editor.chain().focus().toggleTaskList().run()} isActive={editor.isActive("taskList")} label="Task List">
+      <ToolButton onClick={() => continueList(editor, "taskList") || editor.chain().focus().toggleTaskList().run()} isActive={editor.isActive("taskList")} label="Task List" keytip="3">
         <CheckSquare className="size-4" />
       </ToolButton>
 
       <Separator orientation="vertical" className="mx-1 h-6" />
 
       {/* Insert */}
-      <ToolButton onClick={() => editor.chain().focus().toggleBlockquote().run()} isActive={editor.isActive("blockquote")} label="Blockquote">
+      <ToolButton onClick={() => editor.chain().focus().toggleBlockquote().run()} isActive={editor.isActive("blockquote")} label="Blockquote" keytip="Q">
         <Quote className="size-4" />
       </ToolButton>
-      <ToolButton onClick={() => editor.chain().focus().toggleCodeBlock().run()} isActive={editor.isActive("codeBlock")} label="Code Block">
+      <ToolButton onClick={() => editor.chain().focus().toggleCodeBlock().run()} isActive={editor.isActive("codeBlock")} label="Code Block" keytip="K">
         <Code className="size-4" />
       </ToolButton>
       {editor.isActive("codeBlock") && (
@@ -564,13 +628,13 @@ export function EditorToolbar({ editor, pageMode = "bunri", onPageModeChange, ma
           ))}
         </select>
       )}
-      <ToolButton onClick={insertLink} isActive={editor.isActive("link")} label="Insert Link">
+      <ToolButton onClick={insertLink} isActive={editor.isActive("link")} label="Insert Link" keytip="G">
         <Link className="size-4" />
       </ToolButton>
       <DropdownMenu>
         <DropdownMenuTrigger
           render={(props) => (
-            <ToolButton {...props} isActive={false} label="Insert Image">
+            <ToolButton {...props} isActive={false} label="Insert Image" keytip="E">
               <ImageIcon className="size-4" />
             </ToolButton>
           )}
@@ -595,35 +659,35 @@ export function EditorToolbar({ editor, pageMode = "bunri", onPageModeChange, ma
           e.target.value = ""
         }}
       />
-      <ToolButton onClick={insertTable} isActive={editor.isActive("table")} label="Insert Table">
+      <ToolButton onClick={insertTable} isActive={editor.isActive("table")} label="Insert Table" keytip="T">
         <Table className="size-4" />
       </ToolButton>
       <Separator orientation="vertical" className="mx-1 h-6" />
-      <ToolButton onClick={() => editor.chain().focus().addRowBefore().run()} isActive={false} disabled={!inTable} label="행 위에 추가">
+      <ToolButton onClick={() => editor.chain().focus().addRowBefore().run()} isActive={false} disabled={!inTable} label="행 위에 추가" keytip="A">
         <ArrowUpFromLine className="size-4" />
       </ToolButton>
-      <ToolButton onClick={() => editor.chain().focus().addRowAfter().run()} isActive={false} disabled={!inTable} label="행 아래에 추가">
+      <ToolButton onClick={() => editor.chain().focus().addRowAfter().run()} isActive={false} disabled={!inTable} label="행 아래에 추가" keytip="H">
         <ArrowDownToLine className="size-4" />
       </ToolButton>
-      <ToolButton onClick={() => editor.chain().focus().addColumnBefore().run()} isActive={false} disabled={!inTable} label="열 앞에 추가">
+      <ToolButton onClick={() => editor.chain().focus().addColumnBefore().run()} isActive={false} disabled={!inTable} label="열 앞에 추가" keytip="O">
         <ArrowLeftFromLine className="size-4" />
       </ToolButton>
-      <ToolButton onClick={() => editor.chain().focus().addColumnAfter().run()} isActive={false} disabled={!inTable} label="열 뒤에 추가">
+      <ToolButton onClick={() => editor.chain().focus().addColumnAfter().run()} isActive={false} disabled={!inTable} label="열 뒤에 추가" keytip="V">
         <ArrowRightToLine className="size-4" />
       </ToolButton>
-      <ToolButton onClick={() => editor.chain().focus().mergeCells().run()} isActive={false} disabled={!inTable} label="셀 병합">
+      <ToolButton onClick={() => editor.chain().focus().mergeCells().run()} isActive={false} disabled={!inTable} label="셀 병합" keytip="4">
         <TableCellsMerge className="size-4" />
       </ToolButton>
-      <ToolButton onClick={() => editor.chain().focus().splitCell().run()} isActive={false} disabled={!inTable} label="셀 분할">
+      <ToolButton onClick={() => editor.chain().focus().splitCell().run()} isActive={false} disabled={!inTable} label="셀 분할" keytip="5">
         <TableCellsSplit className="size-4" />
       </ToolButton>
-      <ToolButton onClick={() => editor.chain().focus().deleteRow().run()} isActive={false} disabled={!inTable} label="행 삭제">
+      <ToolButton onClick={() => editor.chain().focus().deleteRow().run()} isActive={false} disabled={!inTable} label="행 삭제" keytip="6">
         <Trash2 className="size-4" />
       </ToolButton>
-      <ToolButton onClick={() => editor.chain().focus().deleteColumn().run()} isActive={false} disabled={!inTable} label="열 삭제">
+      <ToolButton onClick={() => editor.chain().focus().deleteColumn().run()} isActive={false} disabled={!inTable} label="열 삭제" keytip="7">
         <SquareX className="size-4" />
       </ToolButton>
-      <ToolButton onClick={() => editor.chain().focus().deleteTable().run()} isActive={false} disabled={!inTable} label="표 삭제">
+      <ToolButton onClick={() => editor.chain().focus().deleteTable().run()} isActive={false} disabled={!inTable} label="표 삭제" keytip="8">
         <Ban className={cn("size-4", inTable && "text-destructive")} />
       </ToolButton>
       <div className="relative flex items-center">
@@ -641,25 +705,26 @@ export function EditorToolbar({ editor, pageMode = "bunri", onPageModeChange, ma
           isActive={false}
           disabled={!inTable}
           label="셀 배경색"
+          keytip="9"
         >
           <PaintBucket className="size-4" />
         </ToolButton>
       </div>
-      <ToolButton onClick={removeCellBgColor} isActive={false} disabled={!inTable} label="배경색 제거">
+      <ToolButton onClick={removeCellBgColor} isActive={false} disabled={!inTable} label="배경색 제거" keytip="0">
         <span className="text-xs font-bold leading-none">×</span>
       </ToolButton>
-      <ToolButton onClick={() => editor.chain().focus().setHorizontalRule().run()} isActive={false} label="Horizontal Rule (삽입)">
+      <ToolButton onClick={() => editor.chain().focus().setHorizontalRule().run()} isActive={false} label="Horizontal Rule (삽입)" keytip="M">
         <Minus className="size-4" />
       </ToolButton>
 
-      <ToolButton onClick={() => editor.chain().focus().insertContent({ type: "pageBreak", attrs: { auto: false } }).run()} isActive={false} label="Page Break">
+      <ToolButton onClick={() => editor.chain().focus().insertContent({ type: "pageBreak", attrs: { auto: false } }).run()} isActive={false} label="Page Break" keytip="P">
         <SeparatorHorizontal className="size-4" />
       </ToolButton>
 
       <Separator orientation="vertical" className="mx-1 h-6" />
 
       {/* Fullscreen */}
-      <ToolButton onClick={toggleFullscreen} isActive={false} label="Fullscreen">
+      <ToolButton onClick={toggleFullscreen} isActive={false} label="Fullscreen" keytip="F">
         {isFullscreen ? <Minimize className="size-4" /> : <Maximize className="size-4" />}
       </ToolButton>
       </div>
@@ -671,6 +736,7 @@ export function EditorToolbar({ editor, pageMode = "bunri", onPageModeChange, ma
         onClick={() => onPageModeChange?.("wide")}
         isActive={pageMode === "wide"}
         label="Wide (전폭 연속)"
+        keytip="W"
       >
         <Maximize className="size-4" />
       </ToolButton>
@@ -678,6 +744,7 @@ export function EditorToolbar({ editor, pageMode = "bunri", onPageModeChange, ma
         onClick={() => onPageModeChange?.("ilche")}
         isActive={pageMode === "ilche"}
         label="일체 (A4 연속)"
+        keytip="D"
       >
         <FileText className="size-4" />
       </ToolButton>
@@ -685,6 +752,7 @@ export function EditorToolbar({ editor, pageMode = "bunri", onPageModeChange, ma
         onClick={() => onPageModeChange?.("bunri")}
         isActive={pageMode === "bunri"}
         label="분리 (A4 페이지 구분)"
+        keytip="N"
       >
         <SeparatorHorizontal className="size-4" />
       </ToolButton>
@@ -774,5 +842,6 @@ export function EditorToolbar({ editor, pageMode = "bunri", onPageModeChange, ma
       </ToolButton>
       </div>
     </div>
+    </KeytipsContext.Provider>
   )
 }

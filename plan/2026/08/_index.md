@@ -4,3 +4,4 @@
 |--------|-----------|------|--------|
 | 05_01_user-auth | 사용자 인증(비밀번호 기반 HTTP-only HMAC 세션, 게스트/보호 토글, asset/fs/export 보호) | Todo | 2026-08-05 |
 | 05_02_ui-locator | UI 좌표·명칭 공유 도구(마우스 정지 감지 툴팁 + 백틱 클립보드 복사, dev 전용, Ctrl+Shift+L 토글) | Todo | 2026-08-05 |
+| 10_01_keyboard-shortcuts | 에디터 키보드 단축키: Page Break Ctrl+Enter 신규 + Alt 키팁(툴바 전체 단축키 배지·키 실행) | Done | 2026-08-10 |

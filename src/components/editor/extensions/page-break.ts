@@ -11,6 +11,15 @@ export const PageBreak = Node.create({
 
   draggable: true,
 
+  addKeyboardShortcuts() {
+    return {
+      "Mod-Enter": () => {
+        this.editor.chain().focus().insertContent({ type: "pageBreak", attrs: { auto: false } }).run()
+        return true
+      },
+    }
+  },
+
   addAttributes() {
     return {
       auto: {
